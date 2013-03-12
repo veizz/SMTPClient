@@ -68,7 +68,6 @@
         public function changeState(SMTPClientState $state)
         {
             $this->state = $state;
-            return $this;
         }
 
     }
