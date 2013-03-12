@@ -2,6 +2,26 @@ SMTP Client
 ==========
 Just a powerful SMTP client to send e-mail messages.
 
+How i could use/test ?
+----------------------
+Firstly, clone the repository.
+```
+$ git clone git://github.com/andreyknupp/SMTPClient.git
+$ cd SMTPClient/
+```
+Switch the current directory to SMTPClient directory.
+```
+$ cd SMTPClient/
+```
+Install dependencies via composer.
+```
+curl -s http://getcomposer.org/installer | php
+$ php composer.phar install
+```
+Perform unit testing is not yet possible, but the same will be provided in future.
+
+How it works.
+---------------------------
 With this library you can send mail messages via SMTP in a intuitive and robust way. <br />
 Initial example, how to connect and perform an authentication with *Google's GMail* SMTP server using a **SSL** connection.
 
@@ -9,7 +29,7 @@ Initial example, how to connect and perform an authentication with *Google's GMa
 <?php
 
     require_once "config/bootstrap.php";
-
+    
     use utils\Net\SMTP\SMTPClient;
     use utils\Net\SMTP\Connection\SSLConnection;
 
@@ -26,7 +46,7 @@ $client->authenticate(new Login("user", "pswd")); //Just tell to authenticate wi
 ```
 
 Some basics about the State on the Client.
-==============================================
+------------------------------------------
 The **SMTPClientStateClosed** is the initial state because we aren't connected with a SMTP server, and in this state 
 we can call the "open" method to connect with the mail server, if the connection was successfully established, 
 the client state will change to **SMTPClientStateEstablished**, in this state, we can authenticate the client, 
