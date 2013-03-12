@@ -1,6 +1,6 @@
 SMTP Client
 ==========
-\- Just a powerful SMTP client to send e-mail messages.
+Just a powerful SMTP client to send e-mail messages.
 
 With this library you can send mail messages via SMTP in a intuitive and robust way. <br />
 Initial example, how to connect and perform an authentication with *Google's GMail* SMTP server using a **SSL** connection.
@@ -8,18 +8,22 @@ Initial example, how to connect and perform an authentication with *Google's GMa
 ```PHP
 <?php
 
+    require_once "config/bootstrap.php";
+
     use utils\Net\SMTP\SMTPClient;
-    use utils\Net\SMTP\Authentication\Login;
     use utils\Net\SMTP\Connection\SSLConnection;
 
     $client = new SMTPClient();
     $client->open(new SSLConnection("smtp.gmail.com", 465));
-    $client->authenticate(new Login("username@gmail.com", "password"));
     $client->close();
     
 ```
-
-It's simple, huh ? every action you execute in the client, you are triggering an action in the current state, so if you aren't in the state to perform the action, you simply gets an exception.
+It's simple, huh ? this is the code to connection with the **GMail** SMTP server using SSL protocol. <br />
+Maybe, you want to do client authentication, then you can simply do:
+```PHP
+use utils\Net\SMTP\Authentication\Login; //Or another authentication method/mechanism
+$client->authenticate(new Login("user", "pswd")); //Just tell to authenticate with provided method, and us do the rest.
+```
 
 Some basics about the State on the Client.
 ==============================================
