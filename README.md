@@ -26,7 +26,7 @@ It's simple, huh ? every action you execute in the client, you are triggering an
 Some basics about the State in the SMTPClient.
 ==============================================
 - **SMTPClientStateClosed**: is the initial state, we aren't connected with a SMTP server, and in this state we can perform "open" action, to connect with.
-- **SMTPClientStateConnected**: the connection was opened successfully, in this state we can perform authentication, so then, the server can recognize the user, and can perform "close", and in future we're able to do more things.
+- **SMTPClientStateConnected**: the connection was opened successfully, in this state we can perform authentication depending on base state, so then, the server can recognize the user, and can perform "close", and in future we're able to do more things.
 - **SMTPClientStateEstablished**: it's sounds like state connected, but isn't, an internal policy of SMTP server which describes that authentication cannot be twice, in this case, the "Authenticated" state, doesn't is a state "Established", we're just connected, but it's a client authenticated, so that means and guarantees we aren't able to perform authentication twice in the connection.
 - **SMTPClientStateAuthenticated**: this is more complex, user can sending mails in local network (same network as SMTP server), this means he doesn't need a authentication, but external servers like "gmail", "yahoo" needs an client authentication.
 
