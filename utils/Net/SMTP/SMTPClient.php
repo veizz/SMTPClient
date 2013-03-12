@@ -36,6 +36,7 @@
         public function open(SMTPConnection $connection)
         {
             $this->state->open($connection, $this);
+            return $this;
         }
 
         /**
@@ -46,6 +47,7 @@
         public function authenticate(SMTPAuthenticator $authenticator)
         {
             $this->state->authenticate($authenticator, $this);
+            return $this;
         }
 
         /**
@@ -55,6 +57,7 @@
         public function close()
         {
             $this->state->close($this);
+            return $this;
         }
 
         /**
@@ -65,6 +68,7 @@
         public function changeState(SMTPClientState $state)
         {
             $this->state = $state;
+            return $this;
         }
 
     }
