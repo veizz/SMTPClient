@@ -1,0 +1,20 @@
+{
+    "name": "andreyknupp/smtp-client",
+    "description": "Just a powerful SMTP client to send email messages",
+    "authors": [
+        {
+            "name": "Andrey Knupp Vital",
+            "email": "andreykvital@gmail.com"
+        }
+    ],
+    "keywords": ["smtp", "client", "mail", "php"],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "lib-openssl": ">=0.9.0",
+        "php": ">=5.3.0"
+    },
+    "support": {
+        "issues": "https://github.com/andreyknupp/SMTPClient/issues",
+        "source": "https://github.com/andreyknupp/SMTPClient"
+    }
+}
