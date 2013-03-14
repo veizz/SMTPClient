@@ -15,7 +15,7 @@ $ cd SMTPClient/
 ```
 Install dependencies via composer.
 ```
-curl -s http://getcomposer.org/installer | php
+$ curl -s http://getcomposer.org/installer | php
 $ php composer.phar install
 ```
 Perform unit testing is not yet possible, but the same will be provided in future.
@@ -29,20 +29,21 @@ Initial example, how to connect and perform an authentication with *Google's GMa
 <?php
 
     require_once "config/bootstrap.php";
-    
-    use utils\Net\SMTP\SMTPClient;
-    use utils\Net\SMTP\Connection\SSLConnection;
 
-    $client = new SMTPClient();
+    use utils\net\SMTP\Client;
+    use utils\net\SMTP\Client\Connection\SSLConnection;
+
+    $client = new Client();
     $client->open(new SSLConnection("smtp.gmail.com", 465));
     $client->close();
-    
 ```
 It's simple, huh ? this is the code to connection with the **GMail** SMTP server using SSL protocol. <br />
 Maybe, you want to do client authentication, then you can simply do:
 ```PHP
-use utils\Net\SMTP\Authentication\Login; //Or another authentication method/mechanism
-$client->authenticate(new Login("user", "pswd")); //Just tell to authenticate with provided method, and us do the rest.
+//Or another authentication method/mechanism
+use utils\net\SMTP\Authentication\Login; 
+//Just tell to authenticate with provided method, and us do the rest.
+$client->authenticate(new Login("user", "pswd")); 
 ```
 
 Some basics about the State on the Client.
