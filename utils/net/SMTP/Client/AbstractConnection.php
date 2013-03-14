@@ -1,38 +1,40 @@
 <?php
 
     /**
-     * @package utils.Net.SMTP
+     * @package utils.net.SMTP.Client
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource utils\Net\SMTP\AbstractSTMPClientConnection.php
+     * @filesource utils\net\SMTP\Client\AbstractConnector.php
      */
-    namespace utils\Net\SMTP;
-    use utils\Net\SMTP\SMTPConnection;
+    namespace utils\net\SMTP\Client;
+    use utils\net\SMTP\Client\Connection;
+    use utils\net\SMTP\Client\Message;
+    use \Exception;
     use \ErrorException;
+    use \LogicException;
 
-    abstract class AbstractSMTPClientConnection implements SMTPConnection
+    abstract class AbstractConnection implements Connection
     {
-
         /**
-         * Determines if the connection to the server was been established.
+         * Determines if the connection to the server was been established
          * @var boolean
          */
         protected $established = false;
 
         /**
-         * SMTP server hostname.
+         * SMTP server hostname
          * @var string 
          */
         private $hostname;
-        
+
         /**
-         * Stores the latest server reply.
+         * Stores the latest server reply
          * @var string
          */
         private $lastMessage = null;
-        
+
         /**
          * Stores all messages exchanged between client and server on current connection.
-         * @var array[string]
+         * @var array[Message]
          */
         private $messages = array();
 
@@ -44,18 +46,19 @@
         {
             return $this->hostname;
         }
-        
+
         /**
          * Retrieves latest server reply.
          * @return string
          */
-        public function getLatestServerReply() {
+        public function getLatestServerReply()
+        {
             return $this->lastMessage;
         }
 
         /**
          * Opens a connection with an SMTP server. 
-         * @see \utils\Net\SMTP\AbstractSMTPClientConnection::open()
+         * @see AbstractConnection::open()
          */
         public function __construct($host, $port, $timeout = 30)
         {
@@ -69,23 +72,39 @@
         private $stream = NULL;
 
         /**
-         * Connects to a server socket with specified information. 
-         * @throws ErrorException if couldn't connect to the server
-         * @param string $protocol the protocol used to connect to the server.
-         * @param string $host the server hostname.
-         * @param integer $port server's port.
+         * Creates the client connection with SMTP server.
+         * 
+         * @param string $protocol protocol used to connect to the server
+         * @param string $hostname SMTP server hostname
+         * @param integer $port the SMTP server port
          * @param integer $timeout timeout in seconds for wait a connection.
+         * 
+         * @throws ErrorException if couldn't connect to the server
+         * @throws LogicException if connect timeout is equals zero
          * @return boolean
          */
-        public function createStreamSocketClient($protocol, $host, $port, $timeout = 3)
+        public function createStreamSocketClient($protocol, $hostname, $port, $timeout = 30)
         {
             if (is_null($this->stream)) {
-                $this->stream = stream_socket_client(sprintf("%s://%s:%d", $protocol, $host, $port));
-                stream_set_timeout($this->getStream(), $timeout);
+                if ($timeout < 0) {
+                    $message = "Timeout must be greater than zero.";
+                    throw new LogicException($message);
+                }
 
-                if ($this->stream === false) {
-                    $message = sprintf("Couldn't connect to SMTP Server %s:%d", $host, $port);
-                    throw new ErrorException($message);
+                if (($host = gethostbyname($hostname)) !== $hostname) {
+                    $errno = 0;
+                    $errstr = NULL;
+
+                    $remote = sprintf("%s://%s:%d", $protocol, $host, $port);
+                    $this->stream = @stream_socket_client($remote, $errno, $errstr, $timeout);
+                    
+                    if ($this->stream === false) {
+                        $message = sprintf("Couldn't connect to SMTP Server %s:%d", $host, $port);
+                        throw new Exception($message, $errno, new ErrorException($errstr, $errno));
+                    }
+                } else {
+                    $message = "The server's hostname is invalid, cannot resolve %s";
+                    throw new ErrorException(sprintf($message, $hostname));
                 }
             }
 
@@ -110,32 +129,32 @@
          */
         public function write($data)
         {
-            $this->messages[] = str_replace("\r\n", NULL, $data);
+            $this->messages[] = new Message($data);
             return fwrite($this->getStream(), $data);
         }
 
         /**
          * Reads one line of the stream.
+         * 
+         * @link https://tools.ietf.org/html/rfc1869 Maximum command line length, 4.1.2
          * @return string
          */
         public function read()
         {
             while (!feof($this->getStream())) {
-                $message = str_replace("\r\n", NULL, fgets($this->getStream(), 1024));
+                $message = new Message(fgets($this->getStream(), 515));
                 $this->messages[] = $message;
-                
+
                 if (substr($message, 3, 1) === chr(32)) {
-                    break;
+                    $this->lastMessage = $message;
+                    return $message;
                 }
             }
-            
-            $this->lastMessage = $message;
-            return $this->getLatestServerReply();
         }
-        
+
         /**
-         * Retrieves all exchanged messages between client and SMTP server.
-         * @return array[string]
+         * Retrieves all exchanged messages between client and server.
+         * @return array[Message]
          */
         public function getExchangedMessages()
         {
@@ -150,13 +169,14 @@
         {
             return !!$this->established;
         }
-        
+
         /**
          * Closes the opened stream resouce to free memory.
          * @return void
          */
-        public function close() {
-            if(fclose($this->stream)){
+        public function close()
+        {
+            if (fclose($this->stream)) {
                 $this->stream = NULL;
                 $this->established = false;
             }

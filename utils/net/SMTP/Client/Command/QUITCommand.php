@@ -1,26 +1,26 @@
 <?php
 
     /**
-     * @package utils.Net.SMTP.Command
+     * @package utils.net.SMTP.Client.Command
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource \utils\Net\SMTP\Command\QUITCommand.php
+     * @filesource \utils\net\SMTP\Command\QUITCommand.php
      */
-    namespace utils\Net\SMTP\Command;
-    use utils\Net\SMTP\AbstractCommand;
+    namespace utils\net\SMTP\Client\Command;
+    use utils\net\SMTP\Client\AbstractCommand;
     use \RuntimeException;
 
     class QUITCommand extends AbstractCommand
     {
 
         /**
-         * Performs an correctly abortion on SMTP server.
-         * @throws RuntimeException if the abortion wasn't a success.
+         * Performs an correctly abortion on SMTP server, by executing QUIT command.
+         * @throws RuntimeException if the abortion wasn't a success
          */
         public function execute()
         {
             if ($this->connection->write("QUIT\r\n")) {
                 $response = $this->connection->read();
-                if(($responseCode = $this->getResponseCode($response)) !== 221) {
+                if(($responseCode = $response->getCode()) !== 221) {
                     $message = "QUIT wasn't successfully performed.";
                     throw new RuntimeException($message, $responseCode);
                 }

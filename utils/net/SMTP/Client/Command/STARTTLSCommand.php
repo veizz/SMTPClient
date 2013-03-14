@@ -1,12 +1,12 @@
 <?php
 
     /**
-     * @package utils.Net.SMTP.Command
+     * @package utils.net.SMTP.Client.Command
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource \utils\Net\SMTP\Command\STARTTLSCommand.php
+     * @filesource \utils\net\SMTP\Command\STARTTLSCommand.php
      */
-    namespace utils\Net\SMTP\Command;
-    use utils\Net\SMTP\AbstractCommand;
+    namespace utils\net\SMTP\Client\Command;
+    use utils\net\SMTP\Client\AbstractCommand;
     use \RuntimeException;
 
     class STARTTLSCommand extends AbstractCommand
@@ -14,13 +14,13 @@
 
         /**
          * Tells the SMTP server we will being using an encrypted connection, using TLS.
-         * @throws RuntimeException if the client connection can't be encrypted by server or client.
+         * @throws RuntimeException if the server wasn't able to negotiate over TLS
          */
         public function execute()
         {
             if ($this->connection->write("STARTTLS\r\n")) {
                 $startTLSResponse = $this->connection->read();
-                if(($responseCode = $this->getResponseCode($startTLSResponse)) !== 220) {
+                if(($responseCode = $startTLSResponse->getCode()) !== 220) {
                     $message = "Couldn't perform STARTTLS command.";
                     throw new RuntimeException($message, $responseCode);
                 } else {

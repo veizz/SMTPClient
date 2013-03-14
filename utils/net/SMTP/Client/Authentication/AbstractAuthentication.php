@@ -1,20 +1,20 @@
 <?php
 
     /**
+     * @package utils.net.SMTP.Client.Authentication
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource \utils\Net\SMTP\Authentication\AbstractSMTPAuthentication.php
-     * @package utils.Net.SMTP.Authentication
+     * @filesource utils\net\SMTP\Client\Authentication\AbstractAuthentication.php
      */
-    namespace utils\Net\SMTP\Authentication;
+    namespace utils\net\SMTP\Client\Authentication;
 
-    abstract class AbstractSMTPAuthentication
+    abstract class AbstractAuthentication
     {
 
         /**
-         * Constructor.
-         * Sets user credentials to perform AUTH LOGIN authentication.
-         * @param string $username the username to perform authentication.
-         * @param string $password the password to authenticate.
+         * Sets user credentials to perform an client authentication.
+         * 
+         * @param string $username the username to perform authentication
+         * @param string $password the password to authenticate
          */
         public function __construct($username, $password)
         {
@@ -46,6 +46,7 @@
 
         /**
          * Sets a password to authenticate.
+         * 
          * @param string $password the password to authenticate
          * @return void
          */
@@ -70,15 +71,6 @@
         public function getPassword()
         {
             return $this->password;
-        }
-        
-        /**
-         * Extract response code from received reply message.
-         * @param string $response response with code.
-         * @return integer
-         */
-        protected function getResponseCode($response) {
-            return intval(substr($response, 0, 3));
         }
 
     }

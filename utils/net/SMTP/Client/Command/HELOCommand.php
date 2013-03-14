@@ -1,20 +1,21 @@
 <?php
 
     /**
-     * @package utils.Net.SMTP.Command
+     * @package utils.net.SMTP.Client.Command
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource \utils\Net\SMTP\Command\HELOCommand.php
+     * @filesource \utils\net\SMTP\Client\Command\HELOCommand.php
      */
-    namespace utils\Net\SMTP\Command;
-    use utils\Net\SMTP\Command\HELLOCommand;
+    namespace utils\net\SMTP\Client\Command;
+    use utils\net\SMTP\Client\Command\HELLOCommand;
     use \RuntimeException;
 
     class HELOCommand extends HELLOCommand
     {
 
         /**
-         * Performs a "HELO" command in the SMTP server.
-         * @throws RuntimeException if the command wasn't executed successfully.
+         * Executes the HELO command in the SMTP server.
+         * 
+         * @throws RuntimeException if the command wasn't executed successfully
          * @return boolean
          */
         public function execute()
