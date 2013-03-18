@@ -7,22 +7,23 @@
      */
     namespace utils\net\SMTP\Client\Connection;
     use utils\net\SMTP\Client\AbstractConnection;
+    use utils\net\SMTP\Client\CommandInvoker;
+    use utils\net\SMTP\Client\Command\EHLOCommand;
+    use utils\net\SMTP\Client\Command\HELOCommand;
 
     class SSLConnection extends AbstractConnection
     {
 
         /**
          * Opens a connection with SMTP server using SSL protocol
-         * 
          * @param string $host valid SMTP server hostname
          * @param integer $port the SMTP server port
          * @param integer $timeout timeout in seconds for wait a connection.
          */
-        public function open($host, $port, $timeout = 30)
+        public function __construct($hostname, $port, $timeout = 30)
         {
-            if ($this->createStreamSocketClient("ssl", $host, $port, $timeout)) {
-                $this->established = true;
-            }
+            parent::__construct();
+            $this->open("ssl", $hostname, $port, $timeout);
         }
         
     }

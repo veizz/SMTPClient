@@ -10,15 +10,17 @@
     use utils\net\SMTP\Client\Authentication\AbstractAuthentication;
     use utils\net\SMTP\Client\Authentication;
     use \RuntimeException;
-
+    use utils\net\SMTP\Client\CommandInvoker;
+    use utils\net\SMTP\Client\Command\InputCommand;
+    use utils\net\SMTP\Client\Command\AUTHCommand;
+    
     class Plain extends AbstractAuthentication implements Authentication
     {
         
         /**
-         * Perform client authentication using AUTH PLAIN mechanism.
-         * 
+         * Perform an AUTH PLAIN in SMTP server to authenticate the user.
+         * @param Connection $connection the connection with SMTP server
          * @link http://www.ietf.org/rfc/rfc2554.txt
-         * @param \utils\net\SMTP\SMTPConnection $connection the client connection to authenticate
          * @return boolean
          */
         public function authenticate(Connection $connection)
@@ -26,18 +28,9 @@
             $username = $this->getUsername();
             $password = $this->getPassword();
 
-            if($connection->write("AUTH PLAIN\r\n")) {
-                $response = $connection->read();
-                if ($response->getCode() === Authentication::ACCEPTED) {
-                    $connection->write(sprintf("%s\r\n",base64_encode(sprintf("\0%s\0%s", $username, $password))));
-                    return $connection->read()->getCode() === Authentication::AUTHENTICATION_PERFORMED;
-                } else {
-                    $unrecognized = Authentication::UNRECOGNIZED_AUTHENTICATION_TYPE;
-                    if($response->getCode() === $unrecognized) {
-                        $message = "Couldn't authenticate using the AUTH PLAIN mechanism.";
-                        throw new RuntimeException($message, $unrecognized);
-                    }
-                }
-            }
+            $invoker = new CommandInvoker();
+            $invoker->invoke(new AUTHCommand($connection, "PLAIN"));
+            $invoker->invoke(new InputCommand($connection, base64_encode(sprintf("\0%s\0%s", $username, $password))));
+            return $connection->read()->getCode() === Authentication::AUTHENTICATION_PERFORMED;
         }
     }

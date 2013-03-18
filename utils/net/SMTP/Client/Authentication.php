@@ -7,7 +7,7 @@
      */
     namespace utils\net\SMTP\Client;
     use utils\net\SMTP\Client\Connection;
-
+    
     interface Authentication
     {
         /**

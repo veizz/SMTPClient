@@ -13,7 +13,7 @@
     {
 
         /**
-         * Connection with SMTP server
+         * The connection with server
          * @var Connection
          */
         protected $connection;
@@ -26,5 +26,5 @@
         {
             $this->connection = $connection;
         }
-        
+    
     }

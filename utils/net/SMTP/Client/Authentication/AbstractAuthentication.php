@@ -11,18 +11,6 @@
     {
 
         /**
-         * Sets user credentials to perform an client authentication.
-         * 
-         * @param string $username the username to perform authentication
-         * @param string $password the password to authenticate
-         */
-        public function __construct($username, $password)
-        {
-            $this->setUsername($username);
-            $this->setPassword($password);
-        }
-        
-        /**
          * Username to perform authentication
          * @var string|NULL
          */
@@ -33,6 +21,17 @@
          * @var string|NULL
          */
         private $password = NULL;
+
+        /**
+         * Sets user credentials to perform an authentication.
+         * @param string $username the username to perform authentication
+         * @param string $password the password to authenticate
+         */
+        public function __construct($username, $password)
+        {
+            $this->setUsername($username);
+            $this->setPassword($password);
+        }
 
         /**
          * Sets the username to perform an authentication.
@@ -46,7 +45,6 @@
 
         /**
          * Sets a password to authenticate.
-         * 
          * @param string $password the password to authenticate
          * @return void
          */
@@ -56,7 +54,7 @@
         }
 
         /**
-         * Retrieve username to be used in authentication.
+         * Retrieves the username to be used in the authentication.
          * @return string|NULL
          */
         public function getUsername()
@@ -65,7 +63,7 @@
         }
 
         /**
-         * Retrieve password to be used in authentication.
+         * Retrieves the password to be used in authentication.
          * @return string|NULL
          */
         public function getPassword()

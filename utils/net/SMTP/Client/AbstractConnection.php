@@ -3,183 +3,147 @@
     /**
      * @package utils.net.SMTP.Client
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
-     * @filesource utils\net\SMTP\Client\AbstractConnector.php
+     * @filesource utils\net\SMTP\Client\AbstractConnection.php
      */
     namespace utils\net\SMTP\Client;
     use utils\net\SMTP\Client\Connection;
-    use utils\net\SMTP\Client\Message;
-    use \Exception;
-    use \ErrorException;
-    use \LogicException;
-
+    use utils\net\SMTP\Client\Connection\State\Closed;
+    use utils\net\SMTP\Client\ConnectionState;
+    use utils\net\SMTP\Client\CommandInvoker;
+    use utils\net\SMTP\Client\Command\EHLOCommand;
+    use utils\net\SMTP\Client\Command\HELOCommand;
+    
     abstract class AbstractConnection implements Connection
     {
         /**
-         * Determines if the connection to the server was been established
-         * @var boolean
+         * Current connection state
+         * @var ConnectionState
          */
-        protected $established = false;
-
+        private $state;
+        
         /**
-         * SMTP server hostname
-         * @var string 
-         */
-        private $hostname;
-
-        /**
-         * Stores the latest server reply
+         * Server name that we are connected (not resolved)
          * @var string
          */
-        private $lastMessage = null;
-
+        private $hostname;
+        
         /**
-         * Stores all messages exchanged between client and server on current connection.
-         * @var array[Message]
+         * Sets the initial state of connection (Closed).
+         * @return Connection
          */
-        private $messages = array();
+        public function __construct()
+        {
+            $this->state = new Closed();
+        }
+        
+        /**
+         * Changes the connection state to a new one.
+         * @param ConnectionState $state the new state of the connection.
+         * @return void
+         */
+        public function changeState(ConnectionState $state)
+        {
+            $this->state = $state;
+        }
+        
+        /**
+         * Opens a connection with an SMTP server.
+         * @param string $protocol the protocol to be used to connect
+         * @param string $hostname the server hostname to connect
+         * @param integer $port the server listening port
+         * @param integer $timeout the timeout to wait for a connection
+         * @throws Exception if the server greeting wasn't received successfully
+         * @return boolean|void
+         */
+        public function open($protocol, $hostname, $port, $timeout = 30)
+        {
+            if($this->state->open($protocol, $hostname, $port, $timeout, $this)) {
+                $greeting = $this->read();
+                if(($code = $greeting->getCode()) !== 220) {
+                    $message = "We haven't received the expected greeting";
+                    throw new Exception($message, $code);
+                }
+                
+                $this->hostname = $hostname;
+                $invoker = new CommandInvoker();
+                $invoker->invoke(new EHLOCommand($this));
+                $invoker->invoke(new HELOCommand($this));
+                return true;
+            }
+        }
 
         /**
-         * Retrieves SMTP server hostname.
+         * Closes the opened connection with the server
+         * @return void
+         */
+        public function close()
+        {
+            $this->state->close($this);
+        }
+
+        /**
+         * Reads a server reply.
+         * @return Message
+         */
+        public function read()
+        {
+            return $this->state->read();
+        }
+
+        /**
+         * Writes data on the server stream.
+         * @param string $data the data to be written
+         * @return integer
+         */
+        public function write($data)
+        {
+            return $this->state->write($data);
+        }
+        
+        /**
+         * Authenticates an user in the SMTP server.
+         * @param Authentication $authentication the authentication mechanism to be used.
+         * @return boolean
+         */
+        public function authenticate(Authentication $authentication)
+        {
+            return $this->state->authenticate($authentication, $this);
+        }
+        
+        /**
+         * Retrieves the hostname of smtp server.
          * @return string
          */
         public function getHostname()
         {
             return $this->hostname;
         }
-
+        
         /**
-         * Retrieves latest server reply.
-         * @return string
-         */
-        public function getLatestServerReply()
-        {
-            return $this->lastMessage;
-        }
-
-        /**
-         * Opens a connection with an SMTP server. 
-         * @see AbstractConnection::open()
-         */
-        public function __construct($host, $port, $timeout = 30)
-        {
-            $this->open($host, $port, $timeout);
-        }
-
-        /**
-         * Stream connected to SMTP server.
-         * @var stream|NULL
-         */
-        private $stream = NULL;
-
-        /**
-         * Creates the client connection with SMTP server.
-         * 
-         * @param string $protocol protocol used to connect to the server
-         * @param string $hostname SMTP server hostname
-         * @param integer $port the SMTP server port
-         * @param integer $timeout timeout in seconds for wait a connection.
-         * 
-         * @throws ErrorException if couldn't connect to the server
-         * @throws LogicException if connect timeout is equals zero
-         * @return boolean
-         */
-        public function createStreamSocketClient($protocol, $hostname, $port, $timeout = 30)
-        {
-            if (is_null($this->stream)) {
-                if ($timeout < 0) {
-                    $message = "Timeout must be greater than zero.";
-                    throw new LogicException($message);
-                }
-
-                if (($host = gethostbyname($hostname)) !== $hostname) {
-                    $errno = 0;
-                    $errstr = NULL;
-
-                    $remote = sprintf("%s://%s:%d", $protocol, $host, $port);
-                    $this->stream = @stream_socket_client($remote, $errno, $errstr, $timeout);
-                    
-                    if ($this->stream === false) {
-                        $message = sprintf("Couldn't connect to SMTP Server %s:%d", $host, $port);
-                        throw new Exception($message, $errno, new ErrorException($errstr, $errno));
-                    }
-                } else {
-                    $message = "The server's hostname is invalid, cannot resolve %s";
-                    throw new ErrorException(sprintf($message, $hostname));
-                }
-            }
-
-            $greeting = $this->read();
-            $this->hostname = $host;
-            return true;
-        }
-
-        /**
-         * Retrieves the stream we're connected to.
-         * @return stream|NULL
+         * Retrieves the stream connected with SMTP server.
+         * @return resource
          */
         public function getStream()
         {
-            return $this->stream;
+            return $this->state->getStream();
         }
-
+        
         /**
-         * Writes data to the conected SMTP server.
-         * @param string $data the data to be written.
-         * @return integer
+         * Retrieves the latest exchanged message with the server.
+         * @return Message
          */
-        public function write($data)
+        public function getLatestMessage()
         {
-            $this->messages[] = new Message($data);
-            return fwrite($this->getStream(), $data);
+            return $this->state->getLatestMessage();
         }
-
+        
         /**
-         * Reads one line of the stream.
-         * 
-         * @link https://tools.ietf.org/html/rfc1869 Maximum command line length, 4.1.2
-         * @return string
-         */
-        public function read()
-        {
-            while (!feof($this->getStream())) {
-                $message = new Message(fgets($this->getStream(), 515));
-                $this->messages[] = $message;
-
-                if (substr($message, 3, 1) === chr(32)) {
-                    $this->lastMessage = $message;
-                    return $message;
-                }
-            }
-        }
-
-        /**
-         * Retrieves all exchanged messages between client and server.
+         * Retrieves all exchanged messages with the server.
          * @return array[Message]
          */
         public function getExchangedMessages()
         {
-            return $this->messages;
-        }
-
-        /**
-         * Checks if the connection was properly established.
-         * @return boolean
-         */
-        public function isEstablished()
-        {
-            return !!$this->established;
-        }
-
-        /**
-         * Closes the opened stream resouce to free memory.
-         * @return void
-         */
-        public function close()
-        {
-            if (fclose($this->stream)) {
-                $this->stream = NULL;
-                $this->established = false;
-            }
+            return $this->state->getExchangedMessages();
         }
 
     }

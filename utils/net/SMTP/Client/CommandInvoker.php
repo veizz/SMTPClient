@@ -13,7 +13,7 @@
 
         /**
          * Invokes an specified command.
-         * @param utils\net\SMTP\Client\Command $command the command to be invoked
+         * @param Command $command the command to be invoked
          * @return void
          */
         public function invoke(Command $command)

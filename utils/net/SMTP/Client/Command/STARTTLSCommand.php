@@ -18,7 +18,7 @@
          */
         public function execute()
         {
-            if ($this->connection->write("STARTTLS\r\n")) {
+            if ($this->connection->write("STARTTLS")) {
                 $startTLSResponse = $this->connection->read();
                 if(($responseCode = $startTLSResponse->getCode()) !== 220) {
                     $message = "Couldn't perform STARTTLS command.";

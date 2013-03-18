@@ -18,7 +18,7 @@
          */
         public function execute()
         {
-            if ($this->connection->write("QUIT\r\n")) {
+            if ($this->connection->write("QUIT")) {
                 $response = $this->connection->read();
                 if(($responseCode = $response->getCode()) !== 221) {
                     $message = "QUIT wasn't successfully performed.";

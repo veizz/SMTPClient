@@ -16,21 +16,21 @@
     {
 
         /**
-         * Opens a connection with SMTP server using TLS protocol.
+         * Opens a connection with SMTP server using TCP protocol 
+         * But performs message exchanging over a TLS encryption.
          * 
          * @param string $host valid SMTP server hostname
          * @param integer $port the SMTP server port
          * @param integer $timeout timeout in seconds for wait a connection.
-         * @link http://www.ietf.org/rfc/rfc3207.txt
          */
-        public function open($host, $port, $timeout = 30)
+        public function __construct($host, $port, $timeout = 30)
         {
-            if ($this->createStreamSocketClient("tcp", $host, $port, $timeout)) {
+            parent::__construct();
+            if ($this->open("tcp", $host, $port, $timeout)) {
                 $commandInvoker = new CommandInvoker();
+                $commandInvoker->invoke(new STARTTLSCommand($this));
                 $commandInvoker->invoke(new EHLOCommand($this));
                 $commandInvoker->invoke(new HELOCommand($this));
-                $commandInvoker->invoke(new STARTTLSCommand($this));
-                $this->established = true;
             }
         }
         

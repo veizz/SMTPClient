@@ -14,9 +14,7 @@
 
         /**
          * Executes the EHLO command in the SMTP server.
-         * 
          * @throws RuntimeException if the command wasn't executed successfully
-         * @return boolean
          */
         public function execute()
         {

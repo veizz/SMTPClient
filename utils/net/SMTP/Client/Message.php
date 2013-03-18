@@ -6,12 +6,12 @@
      * @filesource utils\net\SMTP\Client\Message.php
      */
     namespace utils\net\SMTP\Client;
-
+    
     class Message
     {
         
         /**
-         * Each line must ends with this EOL
+         * The end of line of any exchanged message
          * @const string
          */
         const EOL = "\r\n";
@@ -28,7 +28,7 @@
          */
         public function __construct($message)
         {
-            $this->message = str_replace(static::EOL, NULL, $message);
+            $this->message = $message;
         }
 
         /**

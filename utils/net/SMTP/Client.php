@@ -1,77 +1,70 @@
 <?php
 
     /**
-     * @package utils.net.SMTP.Client
+     * @package utils.net.SMTP
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Client.php
      */
     namespace utils\net\SMTP;
-    use utils\net\SMTP\Client\State;
-    use utils\net\SMTP\Client\Authentication;
-    use utils\net\SMTP\Client\State\Closed;
     use utils\net\SMTP\Client\Connection;
+    use utils\net\SMTP\Client\Authentication;
 
     class Client
     {
-        
-        /**
-         * The client state
-         * @var State 
-         */
-        private $state;
 
         /**
-         * Sets the initial client state
+         * The connection used to talk with the server.
+         * @var Connection 
+         */
+        private $connection = NULL;
+
+        /**
+         * - Constructor
+         * @param Connection $connection the connection used to talk with server
          * @return Client
          */
-        public function __construct()
+        public function __construct(Connection $connection)
         {
-            $this->state = new Closed();
+            $this->connection = $connection;
         }
 
         /**
-         * Opens a connection with SMTP server.
-         * 
-         * @param Connection $connection
-         * @return Client
-         */
-        public function open(Connection $connection)
-        {
-            $this->state->open($connection, $this);
-            return $this;
-        }
-
-        /**
-         * Authenticates the client in server.
-         * 
-         * @param Authentication $authentication
-         * @return Client
+         * Authenticates a user with provided authentication mechanism.
+         * @param Authentication $authentication the authentication mechanism
+         * @return boolean
          */
         public function authenticate(Authentication $authentication)
         {
-            $this->state->authenticate($authentication, $this);
-            return $this;
+            return $this->connection->authenticate($authentication);
         }
 
         /**
-         * Closes an opened connection with SMTP server.
-         * @return Client
+         * Closes an opened connection with the SMTP server.
+         * @return void
          */
         public function close()
         {
-            $this->state->close($this);
-            return $this;
+            $this->connection->close();
         }
-
+        
         /**
-         * Changes the client state with the specified one.
-         * 
-         * @param State $state the new state
-         * @return void
+         * Retrieves the latest exchanged message with the server.
+         * @see AbstractConnection::getLatestMessage()
+         * @return Message
          */
-        public function changeState(State $state)
+        public function getLatestMessage()
         {
-            $this->state = $state;
+            return $this->connection->getLatestMessage();
+        }
+        
+        /**
+         * Retrieves all exchanged messages with the server.
+         * @see AbstractConnection::getExchangedMessages()
+         * @return array[Message]
+         */
+        public function getExchangedMessages()
+        {
+            return $this->connection->getExchangedMessages();
         }
 
     }
