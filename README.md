@@ -46,7 +46,7 @@ $client->authenticate(new Login("user", "pswd"));
 ```
 
 How to create a client via **factory** ? <br />
-It's simple, you only need that: 
+It's simple, you only need to do this: 
 ```PHP
 use utils\net\SMTP\ClientFactory;
 $client = ClientFactory::create("ssl://smtp.gmail.com:465");
