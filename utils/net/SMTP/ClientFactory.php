@@ -14,7 +14,6 @@
     use utils\net\SMTP\Client;
     use UnexpectedValueException;
 
-
     class ClientFactory
     {
 
@@ -60,7 +59,7 @@
 
                     $client->authenticate($authentication);
                 }
-
+                
                 return $client;
             }
         }

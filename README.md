@@ -28,30 +28,35 @@ Initial example, how to connect and perform an authentication with *Google's GMa
 ```PHP
 <?php
 
-    require_once "config/bootstrap.php";
+require_once "config/bootstrap.php";
 
-    use utils\net\SMTP\Client;
-    use utils\net\SMTP\Client\Connection\SSLConnection;
+use utils\net\SMTP\Client;
+use utils\net\SMTP\Client\Connection\SSLConnection;
 
-    $client = new Client();
-    $client->open(new SSLConnection("smtp.gmail.com", 465));
-    $client->close();
+$client = new Client(new SSLConnection("smtp.gmail.com", 465));
+$client->close();
 ```
 It's simple, huh ? this is the code to connection with the **GMail** SMTP server using SSL protocol. <br />
 Maybe, you want to do client authentication, then you can simply do:
 ```PHP
-//Or another authentication method/mechanism
-use utils\net\SMTP\Authentication\Login; 
-//Just tell to authenticate with provided method, and us do the rest.
-$client->authenticate(new Login("user", "pswd")); 
+// Or another authentication method/mechanism
+use utils\net\SMTP\Client\Authentication\Login;
+// Just tell to authenticate with provided method, and us do the rest.
+$client->authenticate(new Login("user", "pswd"));
 ```
 
-Some basics about the State on the Client.
-------------------------------------------
-The **SMTPClientStateClosed** is the initial state because we aren't connected with a SMTP server, and in this state 
-we can call the "open" method to connect with the mail server, if the connection was successfully established, 
-the client state will change to **SMTPClientStateEstablished**, in this state, we can authenticate the client, 
-or just send mails (in a unauthenticated way), if choose to authenticate and the authentication was successful, 
-the state becomes **SMTPClienStateAuthenticated**, in this state we can send mails too, but with client 
-authenticated by the server. And finally the state **SMTPClientStateConnected**, and is in this state is that we can 
-execute commands on the server to send e-mails.
+How to create a client via **factory** ? <br />
+It's simple, you only need that: 
+```PHP
+use utils\net\SMTP\ClientFactory;
+$client = ClientFactory::create("ssl://smtp.gmail.com:465");
+```
+With that, you create a connection using SSL, with **smtp.gmail.com** as your SMTP server, that is listening on port **465**. <br />
+Ok, but how to perform **authentication** to an user ? <br />
+Simply, you can do it in same line, by this way:
+```PHP
+use utils\net\SMTP\ClientFactory;
+$client = ClientFactory::create("ssl://user@gmail.com:pswd@smtp.gmail.com:465#login");
+```
+Where **#login** is the authentication mechanism to be used to authenticate, you can use **plain** <br />
+And in the future, more SASL mechanisms.
