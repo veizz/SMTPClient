@@ -5,16 +5,14 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Factory.php
      */
-
     namespace utils\net\SMTP;
-
-use utils\net\SMTP\Client\Connection\TLSConnection;
-use utils\net\SMTP\Client\Connection\TCPConnection;
-use utils\net\SMTP\Client\Connection\SSLConnection;
-use utils\net\SMTP\Client\Authentication\Login;
-use utils\net\SMTP\Client\Authentication\Plain;
-use utils\net\SMTP\Client;
-use UnexpectedValueException;
+    use utils\net\SMTP\Client\Connection\TLSConnection;
+    use utils\net\SMTP\Client\Connection\TCPConnection;
+    use utils\net\SMTP\Client\Connection\SSLConnection;
+    use utils\net\SMTP\Client\Authentication\Login;
+    use utils\net\SMTP\Client\Authentication\Plain;
+    use utils\net\SMTP\Client;
+    use UnexpectedValueException;
 
     class Factory
     {

@@ -48,15 +48,15 @@ $client->authenticate(new Login("user", "pswd"));
 How to create a client via **factory** ? <br />
 It's simple, you only need to do this: 
 ```PHP
-use utils\net\SMTP\ClientFactory;
-$client = ClientFactory::create("ssl://smtp.gmail.com:465");
+use utils\net\SMTP\Factory;
+$client = Factory::createClient("ssl://smtp.gmail.com:465");
 ```
 With that, you create a connection using SSL, with **smtp.gmail.com** as your SMTP server, that is listening on port **465**. <br />
 Ok, but how to perform **authentication** to an user ? <br />
 Simply, you can do it in same line, by this way:
 ```PHP
-use utils\net\SMTP\ClientFactory;
-$client = ClientFactory::create("ssl://user@gmail.com:pswd@smtp.gmail.com:465#login");
+use utils\net\SMTP\Factory;
+$client = Factory::createClient("ssl://user@gmail.com:pswd@smtp.gmail.com:465#login");
 ```
 Where **#login** is the authentication mechanism to be used to authenticate, you can use **plain** <br />
 And in the future, more SASL mechanisms.
