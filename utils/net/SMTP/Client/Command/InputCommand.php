@@ -5,9 +5,11 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Client\Command\InputCommand.php
      */
+
     namespace utils\net\SMTP\Client\Command;
-    use utils\net\SMTP\Client\AbstractCommand;
-    use utils\net\SMTP\Client\Connection;
+
+use utils\net\SMTP\Client\AbstractCommand;
+use utils\net\SMTP\Client\Connection;
 
     class InputCommand extends AbstractCommand
     {
@@ -17,7 +19,7 @@
          * @var string
          */
         private $command;
-        
+
         /**
          * - Constructor
          * @param Connection $connection the connection where command will be performed
@@ -29,7 +31,7 @@
             parent::__construct($connection);
             $this->command = $command;
         }
-        
+
         /**
          * Performs a command on the server
          * @return void

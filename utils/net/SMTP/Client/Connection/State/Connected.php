@@ -14,7 +14,7 @@
     use \ErrorException;
     use utils\net\SMTP\Client\CommandInvoker;
     use utils\net\SMTP\Client\Command\QUITCommand;
-
+    
     abstract class Connected extends AbstractConnectionState
     {
 
@@ -57,7 +57,7 @@
         {
             $invoker = new CommandInvoker();
             $invoker->invoke(new QUITCommand($context));
-            
+
             if (fclose($this->stream)) {
                 $this->stream = NULL;
                 $this->changeState(new Closed(), $context);

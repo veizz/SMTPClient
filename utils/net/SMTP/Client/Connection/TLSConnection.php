@@ -6,11 +6,11 @@
      * @filesource utils\net\SMTP\Client\Connection\TLSConnection.php
      */
     namespace utils\net\SMTP\Client\Connection;
-    use utils\net\SMTP\Client\Command\STARTTLSCommand;
+    use utils\net\SMTP\Client\AbstractConnection;
+    use utils\net\SMTP\Client\CommandInvoker;
     use utils\net\SMTP\Client\Command\EHLOCommand;
     use utils\net\SMTP\Client\Command\HELOCommand;
-    use utils\net\SMTP\Client\CommandInvoker;
-    use utils\net\SMTP\Client\AbstractConnection;
+    use utils\net\SMTP\Client\Command\STARTTLSCommand;
 
     class TLSConnection extends AbstractConnection
     {
@@ -33,5 +33,5 @@
                 $commandInvoker->invoke(new HELOCommand($this));
             }
         }
-        
+
     }

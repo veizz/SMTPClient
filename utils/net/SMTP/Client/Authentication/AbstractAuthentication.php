@@ -5,6 +5,7 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Client\Authentication\AbstractAuthentication.php
      */
+
     namespace utils\net\SMTP\Client\Authentication;
 
     abstract class AbstractAuthentication

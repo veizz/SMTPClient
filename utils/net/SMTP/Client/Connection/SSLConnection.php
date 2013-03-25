@@ -7,9 +7,6 @@
      */
     namespace utils\net\SMTP\Client\Connection;
     use utils\net\SMTP\Client\AbstractConnection;
-    use utils\net\SMTP\Client\CommandInvoker;
-    use utils\net\SMTP\Client\Command\EHLOCommand;
-    use utils\net\SMTP\Client\Command\HELOCommand;
 
     class SSLConnection extends AbstractConnection
     {
@@ -25,5 +22,5 @@
             parent::__construct();
             $this->open("ssl", $hostname, $port, $timeout);
         }
-        
+
     }

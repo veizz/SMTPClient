@@ -12,21 +12,22 @@
     use utils\net\SMTP\Client\CommandInvoker;
     use utils\net\SMTP\Client\Command\EHLOCommand;
     use utils\net\SMTP\Client\Command\HELOCommand;
-    
+
     abstract class AbstractConnection implements Connection
     {
+
         /**
          * Current connection state
          * @var ConnectionState
          */
         private $state;
-        
+
         /**
          * Server name that we are connected (not resolved)
          * @var string
          */
         private $hostname;
-        
+
         /**
          * Sets the initial state of connection (Closed).
          * @return Connection
@@ -35,7 +36,7 @@
         {
             $this->state = new Closed();
         }
-        
+
         /**
          * Changes the connection state to a new one.
          * @param ConnectionState $state the new state of the connection.
@@ -45,7 +46,7 @@
         {
             $this->state = $state;
         }
-        
+
         /**
          * Opens a connection with an SMTP server.
          * @param string $protocol the protocol to be used to connect
@@ -57,13 +58,13 @@
          */
         public function open($protocol, $hostname, $port, $timeout = 30)
         {
-            if($this->state->open($protocol, $hostname, $port, $timeout, $this)) {
+            if ($this->state->open($protocol, $hostname, $port, $timeout, $this)) {
                 $greeting = $this->read();
-                if(($code = $greeting->getCode()) !== 220) {
+                if (($code = $greeting->getCode()) !== 220) {
                     $message = "We haven't received the expected greeting";
                     throw new Exception($message, $code);
                 }
-                
+
                 $this->hostname = $hostname;
                 $invoker = new CommandInvoker();
                 $invoker->invoke(new EHLOCommand($this));
@@ -99,7 +100,7 @@
         {
             return $this->state->write($data);
         }
-        
+
         /**
          * Authenticates an user in the SMTP server.
          * @param Authentication $authentication the authentication mechanism to be used.
@@ -109,7 +110,7 @@
         {
             return $this->state->authenticate($authentication, $this);
         }
-        
+
         /**
          * Retrieves the hostname of smtp server.
          * @return string
@@ -118,7 +119,7 @@
         {
             return $this->hostname;
         }
-        
+
         /**
          * Retrieves the stream connected with SMTP server.
          * @return resource
@@ -127,7 +128,7 @@
         {
             return $this->state->getStream();
         }
-        
+
         /**
          * Retrieves the latest exchanged message with the server.
          * @return Message
@@ -136,7 +137,7 @@
         {
             return $this->state->getLatestMessage();
         }
-        
+
         /**
          * Retrieves all exchanged messages with the server.
          * @return array[Message]

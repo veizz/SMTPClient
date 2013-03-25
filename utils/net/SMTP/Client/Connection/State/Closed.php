@@ -41,7 +41,7 @@
             $stream = @stream_socket_client($remote, $errno, $errstr, $timeout);
 
             if ($stream === false) {
-                $message = sprintf("Couldn't connect to SMTP server %s:%d", $host, $port);
+                $message = sprintf("Couldn't connect to SMTP server %s:%d", $hostname, $port);
                 throw new Exception($message, $errno, new ErrorException($errstr, $errno));
             }
 

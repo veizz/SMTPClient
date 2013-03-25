@@ -46,7 +46,7 @@
         {
             $this->connection->close();
         }
-        
+
         /**
          * Retrieves the latest exchanged message with the server.
          * @see AbstractConnection::getLatestMessage()
@@ -56,7 +56,7 @@
         {
             return $this->connection->getLatestMessage();
         }
-        
+
         /**
          * Retrieves all exchanged messages with the server.
          * @see AbstractConnection::getExchangedMessages()

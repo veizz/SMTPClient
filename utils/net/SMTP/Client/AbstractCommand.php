@@ -26,5 +26,5 @@
         {
             $this->connection = $connection;
         }
-    
+
     }

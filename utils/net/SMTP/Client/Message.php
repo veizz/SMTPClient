@@ -6,16 +6,15 @@
      * @filesource utils\net\SMTP\Client\Message.php
      */
     namespace utils\net\SMTP\Client;
-    
+
     class Message
     {
-        
         /**
          * The end of line of any exchanged message
          * @const string
          */
         const EOL = "\r\n";
-        
+
         /**
          * Sent or received message
          * @var string
@@ -58,10 +57,9 @@
         {
             return $this->message;
         }
-        
+
         /**
-         * Retrieves the full message.
-         * 
+         * Retrieves the full message
          * @see Message::getFullMessage()
          * @return string
          */

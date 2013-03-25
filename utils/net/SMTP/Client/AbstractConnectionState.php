@@ -10,21 +10,22 @@
     use utils\net\SMTP\Client\Authentication;
     use \BadMethodCallException;
     use \RuntimeException;
-    
+
     abstract class AbstractConnectionState implements ConnectionState
     {
+
         /**
          * Client stream connected to the SMTP server
          * @var resource
          */
         protected $stream;
-        
+
         /**
          * Latest received message from the server.
          * @var Message
          */
         protected $lastMessage = NULL;
-        
+
         /**
          * All messages exchanged with server.
          * @var array[Message]
@@ -85,23 +86,23 @@
         {
             throw new BadMethodCallException("Method not implemented");
         }
-        
+
         /**
          * Retrieves the stream connected with SMTP server.
          * @return resource
          */
         public function getStream()
         {
-            if(is_resource($this->stream)) {
-                if(($type = get_resource_type($this->stream)) === "stream") {
+            if (is_resource($this->stream)) {
+                if (($type = get_resource_type($this->stream)) === "stream") {
                     return $this->stream;
                 }
             }
-            
+
             $message = "Trying to get stream, but the resource type: %s, wasn't expected";
             throw new RuntimeException(sprintf($message, $type));
         }
-        
+
         /**
          * Retrieves the latest exchanged message with the server.
          * @return Message
@@ -110,7 +111,7 @@
         {
             return $this->lastMessage;
         }
-        
+
         /**
          * Retrieves all exchanged messages with the server.
          * @return array[Message]
@@ -125,10 +126,12 @@
          * @param ConnectionState $state the new connection state
          * @param Connection $context the context where state is changeable
          */
-        protected function changeState(ConnectionState $state, Connection $context) {
+        protected function changeState(ConnectionState $state, Connection $context)
+        {
             $state->stream = $this->stream;
             $state->messages = $this->messages;
             $state->lastMessage = $this->lastMessage;
             $context->changeState($state);
         }
+
     }

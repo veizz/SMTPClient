@@ -5,9 +5,11 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource \utils\net\SMTP\Client\Command\HELOCommand.php
      */
+
     namespace utils\net\SMTP\Client\Command;
-    use utils\net\SMTP\Client\Command\HELLOCommand;
-    use \RuntimeException;
+
+use utils\net\SMTP\Client\Command\HELLOCommand;
+use \RuntimeException;
 
     class HELOCommand extends HELLOCommand
     {

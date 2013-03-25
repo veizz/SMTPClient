@@ -5,9 +5,11 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource \utils\net\SMTP\Command\STARTTLSCommand.php
      */
+
     namespace utils\net\SMTP\Client\Command;
-    use utils\net\SMTP\Client\AbstractCommand;
-    use \RuntimeException;
+
+use utils\net\SMTP\Client\AbstractCommand;
+use \RuntimeException;
 
     class STARTTLSCommand extends AbstractCommand
     {
@@ -20,12 +22,12 @@
         {
             if ($this->connection->write("STARTTLS")) {
                 $startTLSResponse = $this->connection->read();
-                if(($responseCode = $startTLSResponse->getCode()) !== 220) {
+                if (($responseCode = $startTLSResponse->getCode()) !== 220) {
                     $message = "Couldn't perform STARTTLS command.";
                     throw new RuntimeException($message, $responseCode);
                 } else {
                     $type = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-                    if(!stream_socket_enable_crypto($this->connection->getStream(), true, $type)){
+                    if (!stream_socket_enable_crypto($this->connection->getStream(), true, $type)) {
                         $message = "Cannot encrypt the connection.";
                         throw new RuntimeException($message);
                     }

@@ -7,13 +7,14 @@
      */
     namespace utils\net\SMTP\Client;
     use utils\net\SMTP\Client\Connection;
-    
+
     interface Authentication
     {
         /**
          * Response code that means a authentication was performed successfully.
          * @const integer
          */
+
         const AUTHENTICATION_PERFORMED = 235;
 
         /**
@@ -22,7 +23,7 @@
          * @const integer
          */
         const UNRECOGNIZED_AUTHENTICATION_TYPE = 504;
-        
+
         /**
          * When authentication step was accepted or the provided authentication mechanism was accepted. 
          * The server replies with a response containing code 334, it means the acceptance.

@@ -13,6 +13,7 @@
 
     class Established extends Connected
     {
+
         /**
          * Authenticates the user with specified authentication method.
          * @param Authentication $authentication the authentication method to authenticate
@@ -22,13 +23,13 @@
          */
         public function authenticate(Authentication $authentication, Connection $context)
         {
-            if(!$authentication->authenticate($context)) {
+            if (!$authentication->authenticate($context)) {
                 $message = "Couldn't authenticate the user";
                 throw new RuntimeException($message);
             }
-            
+
             $this->changeState(new Authenticated(), $context);
             return true;
         }
-        
+
     }
