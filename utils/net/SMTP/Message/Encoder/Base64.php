@@ -30,7 +30,10 @@
          */
         public function encodeHeader($header, $charset = "UTF-8")
         {
-            return mb_encode_mimeheader($header, $charset, "B", "\r\n", 0);
+            $prefix = sprintf("=?%s?B?", $charset);
+            $encoded = rtrim(chunk_split($this->encodeString($header), (70 - strlen($prefix)), "\n"));
+            $encoded = str_replace("\n", sprintf("?=\n %s", $prefix), $encoded);
+            return sprintf("%s%s?=", $prefix, $encoded);
         }
 
     }
