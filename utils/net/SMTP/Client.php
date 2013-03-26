@@ -8,6 +8,12 @@
     namespace utils\net\SMTP;
     use utils\net\SMTP\Client\Connection;
     use utils\net\SMTP\Client\Authentication;
+    use utils\net\SMTP\Message;
+    use utils\net\SMTP\Client\CommandInvoker;
+    use utils\net\SMTP\Client\Command\RCPTCommand;
+    use utils\net\SMTP\Client\Command\MAILCommand;
+    use utils\net\SMTP\Client\Command\DATACommand;
+    use utils\net\SMTP\Message\Composer;
 
     class Client
     {
@@ -66,5 +72,46 @@
         {
             return $this->connection->getExchangedMessages();
         }
-
+        
+        /**
+         * Sends a mail message
+         * @param Message $message the message to send
+         * @return boolean (true was sent, false otherwise)
+         */
+        public function send(Message $message)
+        {
+            $connection = $this->connection;
+            $commandInvoker = new CommandInvoker();
+            $commandInvoker->invoke(new MAILCommand($connection, $message->getFrom()->getEmail()));
+            
+            foreach($this->getRecipients($message) AS $recipient) {
+                $commandInvoker->invoke(new RCPTCommand($connection, $recipient));
+            }
+            
+            $composer = new Composer();
+            $commandInvoker->invoke(new DATACommand($connection, $composer->compose($message)));
+            return true;
+        }
+        
+        /**
+         * Prepares recipients addresses to send the message
+         * @param Message $message the message with their recipients
+         * @return array[string]
+         */
+        private function getRecipients(Message $message)
+        {
+            $addresses = array_merge(
+                $message->getTo(),
+                $message->getCc(),
+                $message->getBcc()
+            );
+            
+            $recipients = array();
+            foreach($addresses AS $address) {
+                $recipients[] = $address->getEmail();
+            }
+            
+            return array_unique($recipients);
+        }
+                
     }

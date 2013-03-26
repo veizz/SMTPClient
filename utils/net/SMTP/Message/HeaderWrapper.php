@@ -19,29 +19,31 @@
 
         /**
          * Wraps an structured header line
+         * @link http://tools.ietf.org/html/rfc2822#section-2.2.2
          * @param Header $header the structured header to wrap
          * @return string
          */
         private function wrapStructured(Structured $header)
         {
-            $tmp = NULL;
+            $line = NULL;
             $lines = array();
             $value = $header->getValue();
 
             for ($i = 0, $l = strlen($value); $i < $l; ++$i) {
-                $tmp .= $value[$i];
-                
+                $line .= $value[$i];
+
                 if ($value[$i] === $header->getDelimiter()) {
-                    array_push($lines, $tmp);
+                    array_push($lines, $lines);
                     $tmp = NULL;
                 }
             }
-            
+
             return implode("\r\n", $lines);
         }
         
         /**
          * Wraps an unstructured header line
+         * @link http://tools.ietf.org/html/rfc2822#section-2.2.1
          * @param Unstructured $header the unstructured header to be wrapped
          * @param Encoder $encoder an encoder to encode the header (default: QuotedPrintable)
          * @return type
@@ -49,9 +51,7 @@
         private function wrapUnstructured(Unstructured $header, Encoder $encoder = NULL)
         {
             $encoding = $header->getEncoding();
-            return ($encoding === "ASCII") 
-                   ? wordwrap($header->getValue(), 78, "\r\n") 
-                   : HeaderEncoder::encode($header->getValue(), $encoding, $encoder);
+            return ($encoding === "ASCII") ? wordwrap($header->getValue(), 78, "\r\n") : HeaderEncoder::encode($header->getValue(), $encoding, $encoder);
         }
         
         /**
@@ -63,13 +63,13 @@
          */
         public function wrap(Header $header, Encoder $encoder = NULL)
         {
-            if($header instanceof Structured) {
+            if ($header instanceof Structured) {
                 return self::wrapStructured($header);
-            } elseif($header instanceof Unstructured) {
+            } elseif ($header instanceof Unstructured) {
                 return self::wrapUnstructured($header, $encoder);
-            } 
-            
-            $message = "We can wrap only Structured or Unstructured headers";
+            }
+
+            $message = "We can wrap only structured or unstructured headers";
             throw new InvalidArgumentException($message);
         }
 

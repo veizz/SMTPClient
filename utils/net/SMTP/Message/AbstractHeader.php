@@ -15,7 +15,7 @@
          * Header encoding
          * @var string
          */
-        private $encoding = "ASCII";
+        private $encoding;
         
         /**
          * Header name
@@ -31,8 +31,8 @@
         
         /**
          * Constructs the header representation
-         * @param string $name header name
-         * @param string $value header value
+         * @param string $name the header name
+         * @param string $value the header value
          */
         public function __construct($name, $value)
         {
@@ -69,11 +69,11 @@
 
         /**
          * Sets the header encoding
-         * @param string $encoding
+         * @param string $encoding the encoding
          */
         public function setEncoding($encoding)
         {
-            $this->encoding = $encoding;
+            $this->encoding = is_null($encoding) ? "ASCII" : $encoding;
         }
         
         /**

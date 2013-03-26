@@ -15,7 +15,7 @@
     use utils\net\SMTP\Client\CommandInvoker;
     use utils\net\SMTP\Client\Command\QUITCommand;
     
-    abstract class Connected extends AbstractConnectionState
+    class Connected extends AbstractConnectionState
     {
 
         /**
@@ -28,7 +28,7 @@
                 $message = new Message(stream_get_line($this->stream, 515, Message::EOL));
                 $this->messages[] = $message;
 
-                if (substr($message->getFullMessage(), 3, 1) === chr(32)) {
+                if (substr($message->getFullMessage(), 3, 1) === chr(0x20)) {
                     $this->lastMessage = $message;
                     return $message;
                 }

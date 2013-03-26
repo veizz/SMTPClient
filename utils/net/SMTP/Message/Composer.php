@@ -6,26 +6,10 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
     namespace utils\net\SMTP\Message;
-    use utils\net\SMTP\Message AS MailMessage;
+    use utils\net\SMTP\Message;
     
     class Composer
     {
-        
-        /**
-         * Message to be composed
-         * @var Message
-         */
-        private $message;
-        
-        /**
-         * - Constructor
-         * Defines the mail message provided to compose.
-         * @param Message $message the message to be composed
-         */
-        public function __construct(MailMessage $message)
-        {
-            $this->message = $message;
-        }
         
         /**
          * Composes headers from the headers set
@@ -46,13 +30,14 @@
         }
         
         /**
-         * Composes the message
+         * Composes an given message
+         * @param Message $message the message to be composed
          * @return string
          */
-        public function compose()
+        public function compose(Message $message)
         {
-            $headers = $this->composeHeaders($this->message->getHeaderSet());
-            return $headers;
+            $headers = $this->composeHeaders($message->getHeaderSet());
+            return sprintf("%s\r\n%s", $headers, $message->getBody());
         }
         
     }

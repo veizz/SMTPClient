@@ -5,11 +5,9 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Client\Command\InputCommand.php
      */
-
     namespace utils\net\SMTP\Client\Command;
-
-use utils\net\SMTP\Client\AbstractCommand;
-use utils\net\SMTP\Client\Connection;
+    use utils\net\SMTP\Client\AbstractCommand;
+    use utils\net\SMTP\Client\Connection;
 
     class InputCommand extends AbstractCommand
     {

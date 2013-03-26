@@ -28,7 +28,7 @@
                 throw new RuntimeException($message);
             }
 
-            $this->changeState(new Authenticated(), $context);
+            $this->changeState(new Connected(), $context);
             return true;
         }
 

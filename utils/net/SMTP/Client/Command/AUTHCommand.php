@@ -5,13 +5,11 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource utils\net\SMTP\Client\Command\AUTHCommand.php
      */
-
     namespace utils\net\SMTP\Client\Command;
-
-use utils\net\SMTP\Client\AbstractCommand;
-use utils\net\SMTP\Client\Authentication;
-use utils\net\SMTP\Client\Connection;
-use \RuntimeException;
+    use utils\net\SMTP\Client\AbstractCommand;
+    use utils\net\SMTP\Client\Authentication;
+    use utils\net\SMTP\Client\Connection;
+    use \RuntimeException;
 
     class AUTHCommand extends AbstractCommand
     {

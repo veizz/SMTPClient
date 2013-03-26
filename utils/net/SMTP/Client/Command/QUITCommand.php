@@ -5,11 +5,9 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource \utils\net\SMTP\Command\QUITCommand.php
      */
-
     namespace utils\net\SMTP\Client\Command;
-
-use utils\net\SMTP\Client\AbstractCommand;
-use \RuntimeException;
+    use utils\net\SMTP\Client\AbstractCommand;
+    use \RuntimeException;
 
     class QUITCommand extends AbstractCommand
     {

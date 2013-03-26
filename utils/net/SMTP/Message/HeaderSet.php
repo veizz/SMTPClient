@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @package utils.net.SMTP
+     * @package utils.net.SMTP.Message
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      * @filesource \utils\net\SMTP\Message\HeaderSet.php
      */
@@ -16,7 +16,7 @@
 
         /**
          * Set of inserted headers for a mail message.
-         * @var array[array[Header],Header]
+         * @var array[Header]
          */
         private $headers = array();
 
@@ -45,8 +45,8 @@
         }
 
         /**
-         * Retrieves from the set
-         * @return array[array[Header]]|Header
+         * Retrieves a header from the set
+         * @return Header
          */
         public function getHeader($header)
         {
@@ -65,7 +65,7 @@
 
         /**
          * Converts the collection to an array
-         * @return array[array[Header],Header]
+         * @return array[Header]
          */
         public function toArray()
         {
@@ -83,7 +83,7 @@
 
         /**
          * Retrieves an iterator for collection
-         * @return \ArrayIterator
+         * @return ArrayIterator
          */
         public function getIterator()
         {

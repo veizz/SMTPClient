@@ -7,9 +7,8 @@
      */
 
     namespace utils\net\SMTP\Client\Command;
-
-use utils\net\SMTP\Client\AbstractCommand;
-use \RuntimeException;
+    use utils\net\SMTP\Client\AbstractCommand;
+    use \RuntimeException;
 
     abstract class HELLOCommand extends AbstractCommand
     {

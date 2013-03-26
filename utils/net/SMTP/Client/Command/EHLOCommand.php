@@ -7,9 +7,8 @@
      */
 
     namespace utils\net\SMTP\Client\Command;
-
-use utils\net\SMTP\Client\Command\HELLOCommand;
-use \RuntimeException;
+    use utils\net\SMTP\Client\Command\HELLOCommand;
+    use \RuntimeException;
 
     class EHLOCommand extends HELLOCommand
     {

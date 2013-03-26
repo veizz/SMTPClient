@@ -6,6 +6,7 @@
      * @filesource \utils\net\SMTP\Message\Encoder.php
      */
     namespace utils\net\SMTP\Message;
+    use utils\net\SMTP\Message\Header;
     
     interface Encoder
     {

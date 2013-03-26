@@ -17,11 +17,12 @@
          * @param string $subject the message subject
          * @return Subject
          */
-        public function __construct($subject)
+        public function __construct($subject, $encoding = NULL)
         {
             parent::__construct("Subject", $subject);
+            $this->setEncoding($encoding);
         }
-        
+
         /**
          * Creates and returns the string representation of header
          * @link http://tools.ietf.org/html/rfc2822#section-2.2.3
@@ -29,8 +30,7 @@
          */
         public function __toString()
         {
-            $this->value = HeaderWrapper::wrap($this);
-            return parent::__toString();
+            return sprintf("%s: %s", $this->getName(), HeaderWrapper::wrap($this));
         }
      
     }
