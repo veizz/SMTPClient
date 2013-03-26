@@ -3,10 +3,10 @@
     "description": "Just a powerful SMTP client to send email messages",
     "keywords": ["smtp", "client", "mail", "php"],
     "authors": [
-        {
-            "name": "Andrey Knupp Vital",
-            "email": "andreykvital@gmail.com"
-        }
+    {
+        "name": "Andrey Knupp Vital",
+        "email": "andreykvital@gmail.com"
+    }
     ],
     "minimum-stability": "dev",
     "require-dev": {

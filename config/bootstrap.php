@@ -1,9 +1,5 @@
 <?php
 
-    /**
-     * Application bootstrap
-     * @filesource config/bootstrap.php 
-     */
     setlocale(LC_ALL, array("pt_BR", "pt_BR.iso-8859-1", "pt_BR.utf-8", "portuguese"));
     ini_set("date.timezone", "America/Sao_Paulo");
 
@@ -16,11 +12,12 @@
         function($class) {
             $filename = sprintf("%s.php", str_replace("\\", DIRECTORY_SEPARATOR, $class));
             $classPath = stream_resolve_include_path($filename);
-            
+
             if ($classPath !== false) {
                 require_once $classPath;
             }
         }
     );
+
 
     
