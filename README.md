@@ -2,24 +2,6 @@ SMTP Client
 ==========
 Just a powerful SMTP client to send e-mail messages.
 
-How i could use/test ?
-----------------------
-Firstly, clone the repository.
-```
-$ git clone git://github.com/andreyknupp/SMTPClient.git
-$ cd SMTPClient/
-```
-Switch the current directory to SMTPClient directory.
-```
-$ cd SMTPClient/
-```
-Install dependencies via composer.
-```
-$ curl -s http://getcomposer.org/installer | php
-$ php composer.phar install
-```
-Perform unit testing is not yet possible, but the same will be provided in future.
-
 How it works.
 ---------------------------
 With this library you can send mail messages via SMTP in a intuitive and robust way. <br />
@@ -45,18 +27,21 @@ use utils\net\SMTP\Client\Authentication\Login;
 $client->authenticate(new Login("user", "pswd"));
 ```
 
-How to create a client via **factory** ? <br />
-It's simple, you only need to do this: 
-```PHP
-use utils\net\SMTP\Factory;
-$client = Factory::createClient("ssl://smtp.gmail.com:465");
+
+How i could use/test ?
+----------------------
+Firstly, clone the repository.
 ```
-With that, you create a connection using SSL, with **smtp.gmail.com** as your SMTP server, that is listening on port **465**. <br />
-Ok, but how to perform **authentication** to an user ? <br />
-Simply, you can do it in same line, by this way:
-```PHP
-use utils\net\SMTP\Factory;
-$client = Factory::createClient("ssl://user@gmail.com:pswd@smtp.gmail.com:465#login");
+$ git clone git://github.com/andreyknupp/SMTPClient.git
+$ cd SMTPClient/
 ```
-Where **#login** is the authentication mechanism to be used to authenticate, you can use **plain** <br />
-And in the future, more SASL mechanisms.
+Switch the current directory to SMTPClient directory.
+```
+$ cd SMTPClient/
+```
+Install dependencies via composer.
+```
+$ curl -s http://getcomposer.org/installer | php
+$ php composer.phar install
+```
+Perform unit testing is not yet possible, but the same will be provided in future.
