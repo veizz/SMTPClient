@@ -1,3 +1,4 @@
 nbproject/
 composer.phar
 composer.lock
+vendor/
