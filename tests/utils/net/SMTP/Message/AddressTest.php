@@ -15,13 +15,23 @@
             $this->assertNull($address->getName());
         }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> a52c5d0... Added test for author name data type
         public function testAddressAuthorNameIsNotNullWhenSpecified()
         {
             $address = new Address("test@test.com", "Test");
             $this->assertNotNull($address->getName());
             $this->assertEquals("Test", $address->getName());
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 2a97167... Added test for author name data type
+>>>>>>> a52c5d0... Added test for author name data type
         public function providerForInvalidEmail()
         {
             return array(
@@ -67,5 +77,37 @@
             
             $this->assertEquals($accepted, count($addresses));
         }
+<<<<<<< HEAD
     
+=======
+
+<<<<<<< HEAD
+        public function testIfProvidedAddressIsSameAsSetted()
+        {
+            $address = new Address("test@test.com");
+            $this->assertNotNull($address->getEmail());
+            $this->assertEquals("test@test.com", $address->getEmail());
+        }
+
+        public function testIfProvidedNameIsSameAsSetted()
+        {
+            $address = new Address("test@test.com", "Test");
+            $this->assertNotNull($address->getName());
+            $this->assertEquals("Test", $address->getName());
+        }
+=======
+	   public function testAddressAuthorNameIsValidTypeWhenSpecified()
+	   {
+		   $address = new Address("test@test.com", "Test");
+		   $this->assertTrue(is_string($address->getName()));
+	   }
+
+	   public function testAddressAuthorNameIsNotValidTypeWhenSpecified()
+	   {
+		   $address = new Address("test@test.com", 15);
+		   $this->assertFalse(is_string($address->getName()));
+	   }
+>>>>>>> 2a97167... Added test for author name data type
+
+>>>>>>> a52c5d0... Added test for author name data type
     }
