@@ -8,7 +8,8 @@
     namespace utils\net\SMTP\Message\Header;
     use utils\net\SMTP\Message\AbstractHeader;
     use utils\net\SMTP\Message\HeaderEncoder;
-    use utils\net\SMTP\Message\Address;
+    use utils\net\SMTP\Message\Encoder;
+    use InvalidArgumentException;
     
     class From extends AbstractHeader
     {
@@ -18,13 +19,20 @@
          * @param string $email the "sender" email address
          * @param string $name the author name of email address
          * @param string $encoding header encoding (if null it will be ASCII)
+         * @param string $encoder specific header encoder to encode an value 
+         * (default is NULL, it's alias to the QuotedPrintable encoder)
          */
-        public function __construct($email, $name = NULL, $encoding = NULL)
+        public function __construct($email, $name = NULL, $encoding = NULL, Encoder $encoder = NULL)
         {
             $this->setEncoding($encoding);
             
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $message = "The email address %s is not valid";
+                throw new InvalidArgumentException(sprintf($message, $email));
+            }
+            
             if(!is_null($name)) {
-                $name = HeaderEncoder::encode($name, $this->getEncoding());
+                $name = HeaderEncoder::encode($name, $this->getEncoding(), $encoder);
                 $value = sprintf("%s <%s>", $name, $email);
             }
             
