@@ -9,7 +9,7 @@
     use utils\net\SMTP\Message\HeaderWrapper;
     use utils\net\SMTP\Message\AbstractHeader;
     use utils\net\SMTP\Message\Header\Type\Unstructured;
-    
+
     class Subject extends AbstractHeader implements Unstructured
     {
         /**
@@ -17,7 +17,7 @@
          * @param string $subject the message subject
          * @return Subject
          */
-        public function __construct($subject, $encoding = NULL)
+        public function __construct($subject = null, $encoding = NULL)
         {
             parent::__construct("Subject", $subject);
             $this->setEncoding($encoding);
@@ -32,5 +32,5 @@
         {
             return sprintf("%s: %s", $this->getName(), HeaderWrapper::wrap($this));
         }
-     
+
     }
