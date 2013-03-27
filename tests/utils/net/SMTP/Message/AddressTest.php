@@ -71,14 +71,14 @@
 	   public function testIfProvidedAddressIsSameAsSetted()
 	   {
 		   $address = new Address("test@test.com");
-		   $this->assertNotNull("test@test.com", $address->getEmail());
+		   $this->assertNotNull($address->getEmail());
 		   $this->assertEquals("test@test.com", $address->getEmail());
 	   }
 
 	   public function testIfProvidedNameIsSameAsSetted()
 	   {
 		   $address = new Address("test@test.com", "Test");
-		   $this->assertNotNull("Text", $address->getName());
+		   $this->assertNotNull($address->getName());
 		   $this->assertEquals("Test", $address->getName());
 	   }
 
