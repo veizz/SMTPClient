@@ -49,6 +49,7 @@
             $message = new Message("123Test");
             $this->assertNotEquals(0, $message->getCode());
             $this->assertNotEquals("123Test", $message->getMessage());
+            $this->assertEquals("Test", $message->getMessage());
         }
 
         public function testToStringIsFullMessageWhenProvided()
