@@ -68,16 +68,18 @@
             $this->assertEquals($accepted, count($addresses));
         }
 
-	   public function testAddressAuthorNameIsValidTypeWhenSpecified()
+	   public function testIfProvidedAddressIsSameAsSetted()
 	   {
-		   $address = new Address("test@test.com", "Test");
-		   $this->assertTrue(is_string($address->getName()));
+		   $address = new Address("test@test.com");
+		   $this->assertNotNull("test@test.com", $address->getEmail());
+		   $this->assertEquals("test@test.com", $address->getEmail());
 	   }
 
-	   public function testAddressAuthorNameIsNotValidTypeWhenSpecified()
+	   public function testIfProvidedNameIsSameAsSetted()
 	   {
-		   $address = new Address("test@test.com", 15);
-		   $this->assertFalse(is_string($address->getName()));
+		   $address = new Address("test@test.com", "Test");
+		   $this->assertNotNull("Text", $address->getName());
+		   $this->assertEquals("Test", $address->getName());
 	   }
 
     }
