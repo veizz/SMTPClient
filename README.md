@@ -33,7 +33,7 @@ $message->from("user@gmail.com") // sender
         ->subject("Hello") // message subject
         ->body("Hello World"); // message content
 
-echo $client->send($message) ? "Sended" : "Opz";
+echo $client->send($message) ? "Message sent" : "Opz";
 ```
 Be happy if the message was sent. <br />
 Otherwise, you can open a issue [here](https://github.com/andreyknupp/SMTPClient/issues/new) if you can't identify the problem type (e.g: credentials, connection [host, port]) to resolve it.
