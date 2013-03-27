@@ -103,14 +103,14 @@
 >>>>>>> 6faba8a... Add tests in setted values
 	   {
 		   $address = new Address("test@test.com");
-		   $this->assertNotNull("test@test.com", $address->getEmail());
+		   $this->assertNotNull($address->getEmail());
 		   $this->assertEquals("test@test.com", $address->getEmail());
 	   }
 
 	   public function testIfProvidedNameIsSameAsSetted()
 	   {
 		   $address = new Address("test@test.com", "Test");
-		   $this->assertNotNull("Text", $address->getName());
+		   $this->assertNotNull($address->getName());
 		   $this->assertEquals("Test", $address->getName());
 	   }
 >>>>>>> 2a97167... Added test for author name data type
