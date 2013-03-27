@@ -1,5 +1,5 @@
 <?php
-    
+
     /**
      * @package utils.net.SMTP.Message
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
@@ -7,7 +7,7 @@
      */
     namespace utils\net\SMTP\Message;
     use \InvalidArgumentException;
-    
+
     class Address
     {
 
@@ -16,13 +16,13 @@
          * @var string
          */
         private $name;
-        
+
         /**
          * Email address
          * @var string
          */
         private $email;
-        
+
         /**
          * Constructs the representation
          * @param string $email the email address

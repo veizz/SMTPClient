@@ -19,13 +19,13 @@
          * Sent or received message
          * @var string
          */
-        private $message = NULL;
+        private $message;
 
         /**
          * Sets an sent or received message to be parsed
          * @param string $message sent or received message
          */
-        public function __construct($message)
+        public function __construct($message = null)
         {
             $this->message = $message;
         }
