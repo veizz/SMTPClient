@@ -75,6 +75,10 @@
             $this->assertNotNull($address->getName());
             $this->assertEquals("Test", $address->getName());
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> d5a495751854582d87e68bc84f97394fed949d15
 
     }
