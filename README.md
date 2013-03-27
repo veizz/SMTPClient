@@ -1,6 +1,7 @@
 SMTP Client
 ==========
-Just a powerful *Service Mail Transfer Protocol* (SMTP) client to send mail messages.
+Just a powerful *Service Mail Transfer Protocol* (SMTP) client to send mail messages. <br />
+*"This is a specific guy for send mail messages over SMTP, isn't a universal mailer that covers all methods for sending a mail*"
 
 How it works.
 ---------------------------
