@@ -15,6 +15,16 @@
             $this->assertNull($address->getName());
         }
 
+<<<<<<< HEAD
+=======
+        public function testAddressAuthorNameIsNotNullWhenSpecified()
+        {
+            $address = new Address("test@test.com", "Test");
+            $this->assertNotNull($address->getName());
+            $this->assertEquals("Test", $address->getName());
+        }
+
+>>>>>>> 37d332efc261e1d1bec6fe78335289279d9a9c15
         public function providerForInvalidEmail()
         {
             return array(
@@ -26,8 +36,12 @@
             );
         }
 
+<<<<<<< HEAD
         public function providerForValidEmail()
         {
+=======
+        public function providerForValidEmail() {
+>>>>>>> 37d332efc261e1d1bec6fe78335289279d9a9c15
             return array(
                 array(array(
                     'test@test.com', 'a.b@c.d', 'test@gmail.com.br',
@@ -62,6 +76,7 @@
             $this->assertEquals($accepted, count($addresses));
         }
 
+<<<<<<< HEAD
         public function testIfProvidedAddressIsSameAsSetted()
         {
             $address = new Address("test@test.com");
@@ -76,5 +91,20 @@
             $this->assertEquals("Test", $address->getName());
         }
         
+=======
+	   public function testIfProvidedAddressIsSameAsSetted()
+	   {
+		   $address = new Address("test@test.com");
+		   $this->assertNotNull($address->getEmail());
+		   $this->assertEquals("test@test.com", $address->getEmail());
+	   }
+
+	   public function testIfProvidedNameIsSameAsSetted()
+	   {
+		   $address = new Address("test@test.com", "Test");
+		   $this->assertNotNull($address->getName());
+		   $this->assertEquals("Test", $address->getName());
+	   }
+>>>>>>> 37d332efc261e1d1bec6fe78335289279d9a9c15
 
     }
