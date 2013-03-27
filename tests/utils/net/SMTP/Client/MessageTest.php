@@ -1,6 +1,6 @@
 <?php
     /**
-     * @filesource MessageTest.php
+     * @filesource tests\utils\net\SMTP\Client\MessageTest.php
      * @author Tiago de Souza Ribeiro <tiago.sr@msn.com>
      */
     use utils\net\SMTP\Client\Message;
