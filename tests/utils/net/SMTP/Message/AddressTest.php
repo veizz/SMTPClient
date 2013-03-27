@@ -21,7 +21,7 @@
             $this->assertNotNull($address->getName());
             $this->assertEquals("Test", $address->getName());
         }
-        
+
         public function providerForInvalidEmail()
         {
             return array(
@@ -32,7 +32,7 @@
                 ))
             );
         }
-        
+
         public function providerForValidEmail() {
             return array(
                 array(array(
@@ -53,7 +53,7 @@
                 $addresses = new Address($email);
             }
         }
-        
+
         /**
          * @dataProvider providerForValidEmail
          */
@@ -64,8 +64,20 @@
                 $address = new Address($email);
                 ++$accepted;
             }
-            
+
             $this->assertEquals($accepted, count($addresses));
         }
-    
+
+	   public function testAddressAuthorNameIsValidTypeWhenSpecified()
+	   {
+		   $address = new Address("test@test.com", "Test");
+		   $this->assertTrue(is_string($address->getName()));
+	   }
+
+	   public function testAddressAuthorNameIsNotValidTypeWhenSpecified()
+	   {
+		   $address = new Address("test@test.com", 15);
+		   $this->assertFalse(is_string($address->getName()));
+	   }
+
     }
