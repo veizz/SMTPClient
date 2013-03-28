@@ -30,7 +30,8 @@
          */
         public function __toString()
         {
-            return sprintf("%s: %s", $this->getName(), HeaderWrapper::wrap($this));
+            $value = HeaderWrapper::wrap($this);
+            return sprintf("%s: %s", $this->getName(), $value);
         }
 
     }

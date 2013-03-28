@@ -1,11 +1,12 @@
 <?php
-
+    
     /**
      * @package utils.net.SMTP.Message
      * @filesource utils\net\SMTP\Message\HeaderWrapper.php
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
     namespace utils\net\SMTP\Message;
+    
     use utils\net\SMTP\Message;
     use utils\net\SMTP\Message\Header;
     use utils\net\SMTP\Message\Header\Type\Structured;
@@ -13,7 +14,7 @@
     use utils\net\SMTP\Message\HeaderEncoder;
     use utils\net\SMTP\Message\Encoder;
     use \InvalidArgumentException;
-    
+
     abstract class HeaderWrapper
     {
 
@@ -23,7 +24,7 @@
          * @param Header $header the structured header to wrap
          * @return string
          */
-        private function wrapStructured(Structured $header)
+        private static function wrapStructured(Structured $header)
         {
             $line = NULL;
             $lines = array();
@@ -40,7 +41,7 @@
 
             return implode("\r\n", $lines);
         }
-        
+
         /**
          * Wraps an unstructured header line
          * @link http://tools.ietf.org/html/rfc2822#section-2.2.1
@@ -48,12 +49,12 @@
          * @param Encoder $encoder an encoder to encode the header (default: QuotedPrintable)
          * @return type
          */
-        private function wrapUnstructured(Unstructured $header, Encoder $encoder = NULL)
+        private static function wrapUnstructured(Unstructured $header, Encoder $encoder = NULL)
         {
             $encoding = $header->getEncoding();
             return ($encoding === "ASCII") ? wordwrap($header->getValue(), 78, "\r\n") : HeaderEncoder::encode($header->getValue(), $encoding, $encoder);
         }
-        
+
         /**
          * Wraps an structured/unstructured header line
          * @param Header $header the header to be wrapped
