@@ -61,7 +61,7 @@
          * @throws \InvalidArgumentException if the provided header is not an instance of Structured or Unstructured
          * @return string
          */
-        public function wrap(Header $header, Encoder $encoder = NULL)
+        public static function wrap(Header $header, Encoder $encoder = NULL)
         {
             if ($header instanceof Structured) {
                 return self::wrapStructured($header);
