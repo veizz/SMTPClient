@@ -1,6 +1,13 @@
 language: php
 php:
     - 5.3
-    
 script: "phpunit -vc tests/phpunit.xml"
- 
+notifications:
+  email:
+    recipients:
+      - andreykvital@gmail.com
+      - andreyknupp@hotmail.com
+      - souzaribeirotiago@yahoo.com
+      
+    on_success: always
+    on_failure: always
