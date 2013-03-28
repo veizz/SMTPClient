@@ -89,18 +89,20 @@
 
         /**
          * Retrieves the stream connected with SMTP server.
-         * @return resource
+         * @return resource|boolean
          */
         public function getStream()
         {
-            if (is_resource($this->stream)) {
+            if(is_resource($this->stream)) {
                 if (($type = get_resource_type($this->stream)) === "stream") {
                     return $this->stream;
                 }
+                
+                $message = "Trying to get stream, but the resource type: %s, wasn't expected";
+                throw new RuntimeException(sprintf($message, $type));
             }
 
-            $message = "Trying to get stream, but the resource type: %s, wasn't expected";
-            throw new RuntimeException(sprintf($message, $type));
+            return false;
         }
 
         /**
