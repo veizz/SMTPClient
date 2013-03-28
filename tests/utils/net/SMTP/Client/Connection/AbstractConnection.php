@@ -7,9 +7,15 @@
     use utils\net\SMTP\Client\Connection\State\Established;
     use \PHPUnit_Framework_Assert;
     use \PHPUnit_Framework_TestCase;
-    
+
+
     abstract class AbstractConnection extends PHPUnit_Framework_TestCase
     {
+        
+        protected function setUp()
+        {
+            $this->markTestSkipped();
+        }
 
         abstract public function getPort();
         abstract public function getHostname();
@@ -101,11 +107,10 @@
             $connection->close();
 
             $this->assertFalse($connection->getStream());
-            
+
             $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
             $this->assertTrue($state instanceof ConnectionState);
             $this->assertTrue($state instanceof Closed);
-            
         }
 
     }
