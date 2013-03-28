@@ -6,7 +6,6 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
     namespace utils\net\SMTP\Message;
-    
     use utils\net\SMTP\Message;
     use utils\net\SMTP\Message\Header;
     use utils\net\SMTP\Message\Header\Type\Structured;

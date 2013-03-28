@@ -14,6 +14,8 @@
     use utils\net\SMTP\Client\Command\MAILCommand;
     use utils\net\SMTP\Client\Command\DATACommand;
     use utils\net\SMTP\Message\Composer;
+    use utils\net\SMTP\Message\Header\From;
+    use \RuntimeException;
 
     class Client
     {
@@ -76,21 +78,28 @@
         /**
          * Sends a mail message
          * @param Message $message the message to send
-         * @return boolean (true was sent, false otherwise)
+         * @throws RuntimeException if the sender is not specified
+         * @return boolean
          */
         public function send(Message $message)
         {
             $connection = $this->connection;
             $commandInvoker = new CommandInvoker();
-            $commandInvoker->invoke(new MAILCommand($connection, $message->getFrom()->getEmail()));
             
-            foreach($this->getRecipients($message) AS $recipient) {
-                $commandInvoker->invoke(new RCPTCommand($connection, $recipient));
+            if(($from = $message->getFrom()) instanceof From) {
+                $commandInvoker->invoke(new MAILCommand($connection, $from->getEmail()));
+                
+                foreach($this->getRecipients($message) AS $recipient) {
+                    $commandInvoker->invoke(new RCPTCommand($connection, $recipient));
+                }
+
+                $composer = new Composer();
+                $commandInvoker->invoke(new DATACommand($connection, $composer->compose($message)));
+                return true;
+            } else {
+                $message = "Couldn't send the message without specifying its sender";
+                throw new RuntimeException($message);
             }
-            
-            $composer = new Composer();
-            $commandInvoker->invoke(new DATACommand($connection, $composer->compose($message)));
-            return true;
         }
         
         /**
@@ -101,9 +110,9 @@
         private function getRecipients(Message $message)
         {
             $addresses = array_merge(
-                $message->getTo(),
-                $message->getCc(),
-                $message->getBcc()
+                $message->getTo(), // Recipients
+                $message->getCc(), // Recipients that receive a copy
+                $message->getBcc() // Recipients that receive an blind copy
             );
             
             $recipients = array();

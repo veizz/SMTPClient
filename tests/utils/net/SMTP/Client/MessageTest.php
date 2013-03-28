@@ -1,4 +1,5 @@
 <?php
+
     /**
      * @filesource tests\utils\net\SMTP\Client\MessageTest.php
      * @author Tiago de Souza Ribeiro <tiago.sr@msn.com>

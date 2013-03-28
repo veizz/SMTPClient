@@ -8,7 +8,6 @@
     use \PHPUnit_Framework_Assert;
     use \PHPUnit_Framework_TestCase;
 
-
     abstract class AbstractConnection extends PHPUnit_Framework_TestCase
     {
         
