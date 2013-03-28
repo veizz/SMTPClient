@@ -1,12 +1,6 @@
 language: php
-script: phpunit -c tests/phpunit.xml
-before_script:
-    - "composer install -v"
-    
-after_script:
-    - "phpunit -c tests/phpunit.xml"
-    
 php:
     - 5.3
-    - 5.4
+    
+script: "phpunit -v"
     
