@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @filesource \tests\utils\net\SMTP\Message\Header\FromTest.php
+     * @filesource tests\utils\net\SMTP\Message\Header\FromTest.php
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
     use utils\net\SMTP\Message\Header\From;
@@ -45,7 +45,7 @@
             $from = new From("test@test.com", "ééããââ", "UTF-8", new Base64());
             $this->assertEquals("From: =?UTF-8?B?w6nDqcOjw6PDosOi?= <test@test.com>", (string) $from);
         }
-        
+
         /**
          * @expectedException \InvalidArgumentException
          */
@@ -53,5 +53,5 @@
         {
             $from = new From("___t,@test.com;#com");
         }
-        
+
     }
