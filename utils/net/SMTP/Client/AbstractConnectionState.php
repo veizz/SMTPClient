@@ -80,7 +80,7 @@
         /**
          * Writes data on the server stream.
          * @param string $data the data to be written
-         * @return integer
+         * @return boolean
          */
         public function write($data)
         {

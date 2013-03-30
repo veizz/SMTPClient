@@ -38,14 +38,14 @@
         /**
          * Writes data on the server stream.
          * @param string $data the data to be written
-         * @return integer
+         * @return boolean
          */
         public function write($data)
         {
             $message = new Message($data);
             $this->messages[] = $message;
             $this->lastMessage = $message;
-            return fwrite($this->stream, $data . Message::EOL);
+            return fwrite($this->stream, $data . Message::EOL) !== FALSE;
         }
 
         /**

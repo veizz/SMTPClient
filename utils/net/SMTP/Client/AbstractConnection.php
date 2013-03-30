@@ -12,6 +12,7 @@
     use utils\net\SMTP\Client\CommandInvoker;
     use utils\net\SMTP\Client\Command\EHLOCommand;
     use utils\net\SMTP\Client\Command\HELOCommand;
+    use \Exception;
 
     abstract class AbstractConnection implements Connection
     {
