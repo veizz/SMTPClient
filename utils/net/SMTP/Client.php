@@ -14,7 +14,7 @@
     use utils\net\SMTP\Client\Command\MAILCommand;
     use utils\net\SMTP\Client\Command\DATACommand;
     use utils\net\SMTP\Message\Composer;
-    use utils\net\SMTP\Message\Header\From;
+    use utils\net\SMTP\Message\Address;
     use \RuntimeException;
 
     class Client
@@ -86,7 +86,7 @@
             $connection = $this->connection;
             $commandInvoker = new CommandInvoker();
             
-            if(($from = $message->getFrom()) instanceof From) {
+            if(($from = $message->getFrom()) instanceof Address) {
                 $commandInvoker->invoke(new MAILCommand($connection, $from->getEmail()));
                 
                 foreach($this->getRecipients($message) AS $recipient) {
