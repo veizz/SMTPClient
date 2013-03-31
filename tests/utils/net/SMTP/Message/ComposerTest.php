@@ -7,6 +7,11 @@
     class ComposerTest extends PHPUnit_Framework_TestCase
     {
 
+        /**
+         * @param string $name header name
+         * @param string $value header value
+         * @return PHPUnit_Framework_MockObject_MockObject
+         */
         private function createHeader($name, $value)
         {
             $header = $this->getMockBuilder("\\utils\\net\\SMTP\\Message\\Header")
