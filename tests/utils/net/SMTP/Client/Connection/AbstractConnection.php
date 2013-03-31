@@ -1,115 +1,129 @@
 <?php
 
+    /**
+     * @package tests.utils.net.SMTP.Client.Connection
+     * @filesource tests\utils\net\SMTP\Client\Connection\AbstractConnection.php
+     * @author Andrey Knupp Vital <andreykvital@gmail.com>
+     * @author Tiago de Souza Ribeiro <tiago.sr@msn.com>
+     */
     namespace tests\utils\net\SMTP\Client\Connection;
-    use utils\net\SMTP\Client\Message;
-    use utils\net\SMTP\Client\ConnectionState;
-    use utils\net\SMTP\Client\Connection\State\Closed;
-    use utils\net\SMTP\Client\Connection\State\Established;
-    use \PHPUnit_Framework_Assert;
     use \PHPUnit_Framework_TestCase;
+    use utils\net\SMTP\Client\Message;
+    use \ReflectionClass;
+    use \PHPUnit_Framework_MockObject_Matcher_InvokedAtIndex;
 
     abstract class AbstractConnection extends PHPUnit_Framework_TestCase
     {
         
-        protected function setUp()
+        /**
+         * @see streamWrapper::stream_eof()
+         * @const string
+         */
+        const EOF = "stream_eof";
+        
+        /**
+         * @see streamWrapper::stream_open()
+         * @const string
+         */
+        const OPEN = "stream_open";
+        
+        /**
+         * @see streamWrapper::stream_write()
+         * @const string
+         */
+        const WRITE = "stream_write";
+        
+        /**
+         * @see streamWrapper::stream_read()
+         * @const string
+         */
+        const READ = "stream_read";
+        
+        protected function getStreamWrapper($protocol, $hostname, $port)
         {
-            $this->markTestSkipped();
-        }
+            $streamWrapper = $this->getMockBuilder("StreamWrapper")
+                                  ->setMethods(array(static::EOF, static::OPEN, static::READ, static::WRITE))
+                                  ->getMock();
 
-        abstract public function getPort();
-        abstract public function getHostname();
-        abstract public function getValidConnection();
-        abstract public function getInvalidConnection();
+            $streamWrapper->expects($this->any())
+                          ->method(static::EOF)
+                          ->will($this->returnValue(false));
+
+            $streamWrapper->expects($this->at(0))
+                          ->method(static::OPEN)
+                          ->with(sprintf("%s://%s:%d", $protocol, $hostname, $port))
+                          ->will($this->returnValue(true));
+
+            $streamWrapper->expects($this->at(2))
+                          ->method(static::READ)
+                          ->will($this->returnMessage(220, "Welcome, we're at your service."));
+            
+            $this->expectWrite($this->at(4), "EHLO localhost", $streamWrapper);
+            
+            $streamWrapper->expects($this->at(6))
+                          ->method(static::READ)
+                          ->will($this->returnMessages(250, array(
+                              "250-SIZE 35882577",
+                              "250-8BITMIME",
+                              "250-AUTH LOGIN PLAIN",
+                              "250 ENHANCEDSTATUSCODES"
+                          )));
+
+            $this->expectWrite($this->at(8), "HELO localhost", $streamWrapper);
+            
+            $streamWrapper->expects($this->at(10))
+                          ->method(static::READ)
+                          ->will($this->returnMessage(250, "Ok"));
+            
+            return $streamWrapper;
+        }
+        
+        protected function expectWrite($index, $message, $streamWrapper)
+        {
+            $streamWrapper->expects($index)
+                          ->method(static::WRITE)
+                          ->with(sprintf("%s%s", $message, Message::EOL))
+                          ->will($this->returnValue(0));
+            
+            return $streamWrapper;
+        }
 
         /**
-         * @expectedException \Exception
+         * @param integer $code the message code
+         * @param string $message the message 
+         * @return string
          */
-        public function testConnectionOpeningWithoutListeningServerAt()
+        protected function createMessage($code, $message)
         {
-            $connection = $this->getInvalidConnection();
+            return sprintf("%d %s%s", $code, $message, Message::EOL);
         }
 
-        public function testConnectionOpeningWithValidHostnameAndPort()
+        /**
+         * @param integer $code the code of messages
+         * @param array[string] $messages all messages to return
+         * @return PHPUnit_Framework_MockObject_Stub_Return
+         */
+        protected function returnMessages($code, array $messages)
         {
-            $hostname = $this->getHostname();
-            $port = $this->getPort();
-
-            try {
-                $connection = $this->getValidConnection();
-                $this->assertEquals("stream", get_resource_type($connection->getStream()));
-            } catch (Exception $e) {
-                $message = "Please listen a SMTP server at %s:%d to run this test";
-                $this->markTestSkipped(sprintf($message, $hostname, $port));
+            $i = 0;
+            $max = count($messages);
+            $returnMessages = array();
+            
+            foreach($messages AS $message) {
+                $separator = (++$i >= $max) ? chr(0x20) : "-";
+                $returnMessages[] = sprintf("%d%s%s%s", $code, $separator, $message, Message::EOL);
             }
-        }
-
-        public function testConnectionHostnameWhenProvidedValid()
-        {
-            try {
-                $connection = $this->getValidConnection();
-                $this->assertEquals($this->getHostname(), $connection->getHostname());
-            } catch (Exception $e) {
-                $this->markTestSkipped();
-            }
+            
+            return $this->returnValue(implode($returnMessages));
         }
 
         /**
-         * @depends testConnectionOpeningWithValidHostnameAndPort
+         * @param integer $code the code to be returned
+         * @param string $message the message to be returned
+         * @return PHPUnit_Framework_MockObject_Stub_Return
          */
-        public function testExchangedMessagesWhenOpenConnection()
-        {
-            $isInstanceCount = 0;
-            $connection = $this->getValidConnection();
-            $messages = $connection->getExchangedMessages();
-            $this->assertInternalType("array", $messages);
-            $this->assertGreaterThanOrEqual(3, $messages);
-
-            foreach ($messages AS $offset => $message) {
-                if ($message instanceof Message) {
-                    ++$isInstanceCount;
-                }
-            }
-
-            $this->assertCount($isInstanceCount, $messages);
+        protected function returnMessage($code, $message) {
+            return $this->returnValue($this->createMessage($code, $message));
         }
-
-        /**
-         * @depends testConnectionOpeningWithValidHostnameAndPort
-         */
-        public function testLatestMessageWhenOpenConnection()
-        {
-            $connection = $this->getValidConnection();
-            $latestMessage = $connection->getLatestMessage();
-
-            $this->assertTrue($latestMessage instanceof Message);
-            $this->assertEquals(250, $latestMessage->getCode());
-        }
-
-        /**
-         * @depends testConnectionOpeningWithValidHostnameAndPort
-         */
-        public function testConnectionStateWhenOpenConnection()
-        {
-            $connection = $this->getValidConnection();
-            $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
-
-            $this->assertTrue($state instanceof ConnectionState);
-            $this->assertTrue($state instanceof Established);
-        }
-
-        /**
-         * @depends testConnectionOpeningWithValidHostnameAndPort
-         */
-        public function testConnectionStateAndResourceAfterClose()
-        {
-            $connection = $this->getValidConnection();
-            $connection->close();
-
-            $this->assertFalse($connection->getStream());
-
-            $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
-            $this->assertTrue($state instanceof ConnectionState);
-            $this->assertTrue($state instanceof Closed);
-        }
-
+        
     }
