@@ -358,7 +358,7 @@
             {
                 global $invalidStreamSocketClient;
                 $invalidStreamSocketClient = TRUE;
-                new TLSConnection(self::PROTOCOL, self::HOSTNAME, self::PORT);
+                new TLSConnection(self::HOSTNAME, self::PORT);
             }
             
         }
