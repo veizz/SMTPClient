@@ -28,13 +28,14 @@
             $line = NULL;
             $lines = array();
             $value = $header->getValue();
+            $delimiter = $header->getDelimiter();
 
             for ($i = 0, $l = strlen($value); $i < $l; ++$i) {
                 $line .= $value[$i];
 
-                if ($value[$i] === $header->getDelimiter()) {
-                    array_push($lines, $lines);
-                    $tmp = NULL;
+                if ($value[$i] === $delimiter) {
+                    array_push($lines, $line);
+                    $line = NULL;
                 }
             }
 
@@ -64,9 +65,9 @@
         public static function wrap(Header $header, Encoder $encoder = NULL)
         {
             if ($header instanceof Structured) {
-                return self::wrapStructured($header);
+                return static::wrapStructured($header);
             } elseif ($header instanceof Unstructured) {
-                return self::wrapUnstructured($header, $encoder);
+                return static::wrapUnstructured($header, $encoder);
             }
 
             $message = "We can wrap only structured or unstructured headers";
