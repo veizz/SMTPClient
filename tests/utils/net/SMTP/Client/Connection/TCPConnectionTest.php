@@ -6,6 +6,18 @@
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
     namespace utils\net\SMTP\Client\Connection\State {
+        
+        if (function_exists("stream_socket_client")) {
+            function stream_socket_client($remote)
+            {
+                $stream = fopen($remote, "w+");
+                return $stream;
+            }
+            
+        } else {
+            $message = "The function stream_socket_client does not exists";
+            throw new \ErrorException($message);
+        }
 
         use utils\net\SMTP\Client\Message;
         use utils\net\SMTP\Client\Connection\TCPConnection;
@@ -15,25 +27,9 @@
         use tests\utils\net\SMTP\Client\Connection\AbstractConnection;
         use \PHPUnit_Framework_Assert;
         
-        function stream_socket_client($remote)
-        {
-            $stream = fopen($remote, "w+");
-            return $stream;
-        }
-
         class TCPConnectionTest extends AbstractConnection
         {
             
-            const PORT = 123;
-            const HOSTNAME = "localhost";
-            const PROTOCOL = "tcp";
-
-            private function getWrapper()
-            {
-                $streamWrapper = $this->getStreamWrapper(static::PROTOCOL, gethostbyname(static::HOSTNAME), static::PORT);
-                return $streamWrapper;
-            }
-
             private function getConnection($streamWrapper) {
                 StreamWrapper::register($streamWrapper, static::PROTOCOL);
                 return new TCPConnection(static::HOSTNAME, static::PORT);

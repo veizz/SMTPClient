@@ -7,6 +7,7 @@
      * @author Tiago de Souza Ribeiro <tiago.sr@msn.com>
      */
     namespace tests\utils\net\SMTP\Client\Connection;
+    
     use \PHPUnit_Framework_TestCase;
     use utils\net\SMTP\Client\Message;
     use \ReflectionClass;
@@ -39,6 +40,48 @@
          */
         const READ = "stream_read";
         
+        /**
+         * @const integer
+         */
+        const PORT = 123;
+        
+        /**
+         * @const string
+         */
+        const HOSTNAME = "localhost";
+        
+        /**
+         * @const string
+         */
+        const PROTOCOL = "tcp";
+            
+        
+        protected function ehloHelo($streamWrapper, array $positions = array(4, 6, 8, 10)) 
+        {
+            $this->expectWrite($this->at(current($positions)), "EHLO localhost", $streamWrapper);
+            next($positions);
+            
+            $streamWrapper->expects($this->at(current($positions)))
+                          ->method(static::READ)
+                          ->will($this->returnMessages(250, array(
+                              "250-SIZE 35882577",
+                              "250-8BITMIME",
+                              "250-AUTH LOGIN PLAIN",
+                              "250 ENHANCEDSTATUSCODES"
+                          )));
+
+            next($positions);
+            $this->expectWrite($this->at(current($positions)), "HELO localhost", $streamWrapper);
+            
+            next($positions);
+            $streamWrapper->expects($this->at(current($positions)))
+                          ->method(static::READ)
+                          ->will($this->returnMessage(250, "Ok"));
+        }
+
+        /**
+         * @return PHPUnit_Framework_MockObject_MockObject
+         */
         protected function getStreamWrapper($protocol, $hostname, $port)
         {
             $streamWrapper = $this->getMockBuilder("StreamWrapper")
@@ -58,23 +101,7 @@
                           ->method(static::READ)
                           ->will($this->returnMessage(220, "Welcome, we're at your service."));
             
-            $this->expectWrite($this->at(4), "EHLO localhost", $streamWrapper);
-            
-            $streamWrapper->expects($this->at(6))
-                          ->method(static::READ)
-                          ->will($this->returnMessages(250, array(
-                              "250-SIZE 35882577",
-                              "250-8BITMIME",
-                              "250-AUTH LOGIN PLAIN",
-                              "250 ENHANCEDSTATUSCODES"
-                          )));
-
-            $this->expectWrite($this->at(8), "HELO localhost", $streamWrapper);
-            
-            $streamWrapper->expects($this->at(10))
-                          ->method(static::READ)
-                          ->will($this->returnMessage(250, "Ok"));
-            
+            $this->ehloHelo($streamWrapper);
             return $streamWrapper;
         }
         
@@ -125,5 +152,12 @@
         protected function returnMessage($code, $message) {
             return $this->returnValue($this->createMessage($code, $message));
         }
+        
+        protected function getWrapper()
+        {
+            $streamWrapper = $this->getStreamWrapper(self::PROTOCOL, gethostbyname(self::HOSTNAME), self::PORT);
+            return $streamWrapper;
+        }
+
         
     }
