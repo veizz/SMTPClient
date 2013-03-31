@@ -7,10 +7,10 @@
      */
     namespace utils\net\SMTP\Message;
     use utils\net\SMTP\Message;
-    
+
     class Composer
     {
-        
+
         /**
          * Composes headers from the headers set
          * @param HeaderSet $headerSet the headers to compose
@@ -25,10 +25,10 @@
                     $headers[] = $header;
                 }
             }
-            
+
             return implode("\r\n", $headers);
         }
-        
+
         /**
          * Composes an given message
          * @param Message $message the message to be composed
@@ -37,7 +37,7 @@
         public function compose(Message $message)
         {
             $headers = $this->composeHeaders($message->getHeaderSet());
-            return sprintf("%s\r\n%s", $headers, $message->getBody());
+            return sprintf("%s\r\n\r\n%s", $headers, $message->getBody());
         }
-        
+
     }
