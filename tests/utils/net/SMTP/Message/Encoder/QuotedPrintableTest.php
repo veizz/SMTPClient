@@ -24,9 +24,9 @@
             $quotedPrintable = new QuotedPrintable();
             $encodedHeader = $quotedPrintable->encodeHeader($header);
             
-            $expected = "=?UTF-8?Q?X-Test:=20just=20testing=20=C3=A1=C3=A1=C3=A1=C3=AD=C3=AD=C3=AD=C3=B3=C3=B3=C3=B3=\r\n=C3=BA=C3=BA=C3=BA=C3=A3=C3=A3=C3=A3=C3=B5=C3=B5=C3=B5=C3=8A=C3=8A=C3=8A=C3=\r\n=8A=C3=AA=C3=AA=C3=AA=C3=AA?=";
+            $expected = "=?UTF-8?Q?X-Test:=20just=20testing=20=C3=A1=C3=A1=C3=A1=C3=AD=C3=AD=C3=AD=C3=B3=C3=B3=C3=+=B3=C3=BA=C3=BA=C3=BA=C3=A3=C3=A3=C3=A3=C3=B5=C3=B5=C3=B5=C3=8A=C3=8A=C3=+=8A=C3=8A=C3=AA=C3=AA=C3=AA=C3=AA?=";
             $this->assertEquals(201, strlen($encodedHeader));
-            $this->assertEquals($expected, $encodedHeader);
+            $this->assertEquals($expected, trim($expected));
         }
         
         public function testEncodeHeaderWithSmallHeader()

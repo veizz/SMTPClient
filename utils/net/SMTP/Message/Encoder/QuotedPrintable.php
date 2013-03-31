@@ -25,7 +25,13 @@
          */
         public function encodeString($data)
         {
-            return quoted_printable_encode($data);
+            $stream = fopen("php://temp", "r+");
+            $write = fwrite($stream, $data);
+            
+            rewind($stream);
+            $options = array("line-feed" => "\n", "line-length" => 73);
+            stream_filter_append($stream, "convert.quoted-printable-encode", STREAM_FILTER_READ, $options);
+            return stream_get_contents($stream);
         }
 
         /**
