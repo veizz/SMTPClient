@@ -26,12 +26,12 @@
          */
         public function __call($name, array $args)
         {
-            if (!is_callable(array(self::$streamWrapper, $name))) {
-                return NULL;
-            } else {
+            if (is_callable(array(self::$streamWrapper, $name))) {
                 $reflection = new ReflectionClass(self::$streamWrapper);
                 return $reflection->getMethod($name)->invokeArgs(self::$streamWrapper, $args);
             }
+            
+            return NULL;
         }
 
         /**
