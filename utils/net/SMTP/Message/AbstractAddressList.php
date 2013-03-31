@@ -103,7 +103,7 @@
                 $emails[] = sprintf("%s <%s>", HeaderEncoder::encode($name, $this->getEncoding()), $email);
             }
             
-            $value = implode(",\r\n", $emails);
+            $value = sprintf("%s\r\n", implode(", ", $emails));
             return count($this) ? sprintf("%s: %s", $this->getName(), $value) : NULL;
         }
         
