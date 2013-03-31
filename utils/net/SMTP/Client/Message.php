@@ -36,7 +36,7 @@
          */
         public function getMessage()
         {
-            return $this->getCode() !== 0 ? substr($this->getFullMessage(), 3) : $this->getFullMessage();
+            return trim($this->getCode() !== 0 ? substr($this->getFullMessage(), 3) : $this->getFullMessage());
         }
 
         /**
