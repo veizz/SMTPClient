@@ -5,6 +5,23 @@
      * @filesource tests\utils\net\SMTP\Client\Connection\State\TLSConnectionTest.php
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
+    
+    namespace {
+        $changeResourceType = false;
+    }
+    
+    namespace utils\net\SMTP\Client {
+        function get_resource_type()
+        {
+            global $changeResourceType;
+            if ($changeResourceType === TRUE) {
+                return "file";
+            }
+            
+            return call_user_func_array("\get_resource_type", func_get_args());
+        }
+    }
+
     namespace utils\net\SMTP\Client\Command {
 
         function stream_socket_enable_crypto($stream, $enable, $type)
@@ -30,6 +47,7 @@
         use tests\utils\net\SMTP\Client\Connection\StreamWrapper;
         use tests\utils\net\SMTP\Client\Connection\AbstractConnection;
         use utils\net\SMTP\Client\Connection\TLSConnection;
+        use utils\net\SMTP\Client\Authentication;
         use \PHPUnit_Framework_Assert;
 
         class TLSConnectionTest extends AbstractConnection
@@ -90,7 +108,7 @@
                 $this->assertGreaterThan(0, count($exchangedMessages));
             }
 
-            public function testQUITCommand()
+            public function testQuitCommand()
             {
                 $streamWrapper = $this->getWrapper();
                 $this->expectWrite($this->at(24), "QUIT", $streamWrapper);
@@ -107,7 +125,7 @@
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\Connection\State\Closed);
             }
 
-            public function testAUTHCommandWithAuthPlain()
+            public function testAuthCommandWithAuthPlain()
             {
                 $username = "test@test.com";
                 $password = "123456";
@@ -137,8 +155,8 @@
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\ConnectionState);
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\Connection\State\Connected);
             }
-
-            public function testAUTHCommandWithAuthLogin()
+            
+            public function testAuthCommandWithAuthLogin()
             {
                 $username = "test.authlogin@test.com";
                 $password = "qwertyuiop123456789";
@@ -148,19 +166,19 @@
 
                 $streamWrapper->expects($this->at(26))
                               ->method(self::READ)
-                              ->will($this->returnMessage(250, NULL));
+                              ->will($this->returnMessage(Authentication::ACCEPTED, NULL));
 
                 $this->expectWrite($this->at(28), base64_encode($username), $streamWrapper);
 
                 $streamWrapper->expects($this->at(30))
                               ->method(self::READ)
-                              ->will($this->returnMessage(334, "Accepted"));
+                              ->will($this->returnMessage(Authentication::ACCEPTED, "Accepted"));
 
                 $this->expectWrite($this->at(32), base64_encode($password), $streamWrapper);
 
                 $streamWrapper->expects($this->at(34))
                               ->method(self::READ)
-                              ->will($this->returnMessage(235, "Authentication Performed"));
+                              ->will($this->returnMessage(Authentication::AUTHENTICATION_PERFORMED, "Authentication Performed"));
 
                 $connection = $this->getConnection($streamWrapper);
                 $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
@@ -172,7 +190,104 @@
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\ConnectionState);
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\Connection\State\Connected);
             }
-
+            
+            /**
+             * @expectedException RuntimeException
+             * @expectedExceptionMessage Couldn't authenticate using the LOGIN mechanism
+             */
+            public function testAuthCommandWithInvalidAuthenticationMechanism()
+            {
+                $username = "test.invalid.auth@test.com";
+                $password = "abcdef";
+                
+                $streamWrapper = $this->getWrapper();
+                $this->expectWrite($this->at(24), "AUTH LOGIN", $streamWrapper);
+                
+                $message = "Unrecognized authentication method";
+                $streamWrapper->expects($this->at(26))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(Authentication::UNRECOGNIZED_AUTHENTICATION_TYPE, $message));
+                
+                $connection = $this->getConnection($streamWrapper);
+                $connection->authenticate(new Login("test.invalid.auth@test.com", "abcdef"));
+                
+                $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
+                $this->assertTrue($state instanceof \utils\net\SMTP\Client\ConnectionState);
+                $this->assertTrue($state instanceof \utils\net\SMTP\Client\Connection\State\Established);
+            }
+            
+            /**
+             * @expectedException BadMethodCallException
+             */
+            public function testWriteAtInvalidState()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $connection->changeState(new Closed());
+                $connection->write("Hello World");
+            }
+            
+            /**
+             * @expectedException BadMethodCallException
+             */
+            public function testReadAtInvalidState()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $connection->changeState(new Closed());
+                $connection->read();
+            }
+            
+            /**
+             * @expectedException BadMethodCallException
+             */
+            public function testOpenAtInvalidState()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $connection->open(self::PROTOCOL, self::HOSTNAME, self::PORT, 30);
+            }
+            
+            /**
+             * @expectedException BadMethodCallException
+             */
+            public function testCloseAtInvalidState()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $connection->changeState(new Closed());
+                $connection->close();
+            }
+           
+            /**
+             * @expectedException BadMethodCallException
+             */
+            public function testAuthenticateAtInvalidState()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $connection->changeState(new Closed());
+                $connection->authenticate(new Login("test@test.com", "test"));
+            }
+            
+            public function testGetStream()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                $this->assertTrue(is_resource($connection->getStream()));
+                
+                $connection->changeState(new Closed());
+                $this->assertFalse($connection->getStream());
+            }
+            
+            
+            /**
+             * @expectedException RuntimeException
+             * @global boolean $changeResourceType
+             */
+            public function testGetStreamWithInvalidResourceType()
+            {
+                $connection = $this->getConnection($this->getWrapper());
+                
+                global $changeResourceType;
+                $changeResourceType = true;
+                $connection->getStream();
+            }
+            
         }
 
     }
