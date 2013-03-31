@@ -5,15 +5,24 @@
      * @filesource utils\net\SMTP\Client\Connection\State\TCPConnectionTest.php
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
+    
+    namespace {
+        $invalidStreamSocketClient = false;
+    }
+    
     namespace utils\net\SMTP\Client\Connection\State {
         
         if (function_exists("stream_socket_client")) {
             function stream_socket_client($remote)
             {
-                $stream = fopen($remote, "w+");
-                return $stream;
+                global $invalidStreamSocketClient;
+                if ($invalidStreamSocketClient === false) {
+                    $stream = fopen($remote, "w+");
+                    return $stream;
+                }
+
+                return false;
             }
-            
         } else {
             $message = "The function stream_socket_client does not exists";
             throw new \ErrorException($message);

@@ -56,18 +56,18 @@
         const PROTOCOL = "tcp";
             
         
-        protected function ehloHelo($streamWrapper, array $positions = array(4, 6, 8, 10)) 
+        protected function ehloHelo($streamWrapper, array $positions = array(4, 6, 8, 10), $responseCode = 250) 
         {
             $this->expectWrite($this->at(current($positions)), "EHLO localhost", $streamWrapper);
             next($positions);
             
             $streamWrapper->expects($this->at(current($positions)))
                           ->method(static::READ)
-                          ->will($this->returnMessages(250, array(
-                              "250-SIZE 35882577",
-                              "250-8BITMIME",
-                              "250-AUTH LOGIN PLAIN",
-                              "250 ENHANCEDSTATUSCODES"
+                          ->will($this->returnMessages($responseCode, array(
+                              "SIZE 35882577",
+                              "8BITMIME",
+                              "AUTH LOGIN PLAIN",
+                              "ENHANCEDSTATUSCODES"
                           )));
 
             next($positions);
@@ -76,13 +76,13 @@
             next($positions);
             $streamWrapper->expects($this->at(current($positions)))
                           ->method(static::READ)
-                          ->will($this->returnMessage(250, "Ok"));
+                          ->will($this->returnMessage($responseCode, "Ok"));
         }
 
         /**
          * @return PHPUnit_Framework_MockObject_MockObject
          */
-        protected function getStreamWrapper($protocol, $hostname, $port)
+        protected function getStreamWrapper($protocol, $hostname, $port, $ehloHelo = TRUE)
         {
             $streamWrapper = $this->getMockBuilder("StreamWrapper")
                                   ->setMethods(array(static::EOF, static::OPEN, static::READ, static::WRITE))
@@ -101,7 +101,9 @@
                           ->method(static::READ)
                           ->will($this->returnMessage(220, "Welcome, we're at your service."));
             
-            $this->ehloHelo($streamWrapper);
+            if ($ehloHelo === TRUE) {
+                $this->ehloHelo($streamWrapper, array(4, 6, 8, 10), 250);
+            }
             return $streamWrapper;
         }
         
@@ -153,9 +155,9 @@
             return $this->returnValue($this->createMessage($code, $message));
         }
         
-        protected function getWrapper()
+        protected function getWrapper($ehloHelo = TRUE)
         {
-            $streamWrapper = $this->getStreamWrapper(self::PROTOCOL, gethostbyname(self::HOSTNAME), self::PORT);
+            $streamWrapper = $this->getStreamWrapper(self::PROTOCOL, gethostbyname(self::HOSTNAME), self::PORT, $ehloHelo);
             return $streamWrapper;
         }
 

@@ -8,6 +8,7 @@
     
     namespace {
         $changeResourceType = false;
+        $invalidStreamSocketClient = false;
     }
     
     namespace utils\net\SMTP\Client {
@@ -36,8 +37,13 @@
         if (!function_exists("stream_socket_client")) {
             function stream_socket_client($remote)
             {
-                $stream = fopen($remote, "w+");
-                return $stream;
+                global $invalidStreamSocketClient;
+                if ($invalidStreamSocketClient === false) {
+                    $stream = fopen($remote, "w+");
+                    return $stream;
+                }
+
+                return false;
             }
         }
 
@@ -53,7 +59,7 @@
         class TLSConnectionTest extends AbstractConnection
         {
             
-            protected function getWrapper()
+            protected function getWrapper($ehloHelo = TRUE)
             {
                 $streamWrapper = parent::getWrapper();
                 $this->expectWrite($this->at(12), "STARTTLS", $streamWrapper);
@@ -62,14 +68,14 @@
                               ->will($this->returnMessage(220, "2.0.0 Ready to start TLS"));
                 
                 //Ehlo and helo will be performed after TLS negotiation at [16, 18, 20, 22].
-                $this->ehloHelo($streamWrapper, array(16, 18, 20, 22));
+                $this->ehloHelo($streamWrapper, array(16, 18, 20, 22), 250);
                 return $streamWrapper;
             }
 
-            private function getConnection($streamWrapper)
+            private function getConnection($streamWrapper, $timeout = 30)
             {
                 StreamWrapper::register($streamWrapper, static::PROTOCOL);
-                return new TLSConnection(static::HOSTNAME, static::PORT);
+                return new TLSConnection(static::HOSTNAME, static::PORT, $timeout);
             }
 
             public function testConnectionOpening()
@@ -286,6 +292,73 @@
                 global $changeResourceType;
                 $changeResourceType = true;
                 $connection->getStream();
+            }
+            
+            
+            /**
+             * @expectedException RuntimeException
+             */
+            public function testPerformEhloWithInvalidResponse()
+            {
+                $streamWrapper = (parent::getWrapper(FALSE));
+                $this->expectWrite($this->at(4), "EHLO localhost", $streamWrapper);
+            
+                $streamWrapper->expects($this->at(6))
+                              ->method(static::READ)
+                              ->will($this->returnMessages(666, array(
+                                "SIZE 35882577",
+                                "8BITMIME",
+                                "AUTH LOGIN PLAIN",
+                                "ENHANCEDSTATUSCODES"
+                              )));
+
+                $this->getConnection($streamWrapper);
+            }
+            
+            /**
+             * @expectedException RuntimeException
+             */
+            public function testPerformHeloWithInvalidResponse()
+            {
+                $streamWrapper = (parent::getWrapper(FALSE));
+                $this->expectWrite($this->at(4), "EHLO localhost", $streamWrapper);
+            
+                $streamWrapper->expects($this->at(6))
+                              ->method(static::READ)
+                              ->will($this->returnMessages(250, array(
+                                "SIZE 35882577",
+                                "8BITMIME",
+                                "AUTH LOGIN PLAIN",
+                                "ENHANCEDSTATUSCODES"
+                              )));
+
+                $this->expectWrite($this->at(8), "HELO localhost", $streamWrapper);
+                
+                $streamWrapper->expects($this->at(10))
+                              ->method(static::READ)
+                              ->will($this->returnMessage(666, "The Number Of The Beast"));
+                
+                $this->getConnection($streamWrapper);
+            }
+            
+            /**
+             * @expectedException Exception
+             * @expectedExceptionMessage Timeout must be greater than zero.
+             */
+            public function testConnectionOpenWithInvalidTimeout()
+            {
+                new TLSConnection(self::HOSTNAME, self::PORT, 0);
+            }
+            
+            /**
+             * @expectedException Exception
+             * @global boolean $invalidStreamSocketClient
+             */
+            public function testConnectionOpenWithInvalidSocketClient()
+            {
+                global $invalidStreamSocketClient;
+                $invalidStreamSocketClient = TRUE;
+                new TLSConnection(self::PROTOCOL, self::HOSTNAME, self::PORT);
             }
             
         }
