@@ -5,10 +5,10 @@
      * @filesource tests\utils\net\SMTP\Client\Connection\State\TLSConnectionTest.php
      * @author Andrey Knupp Vital <andreykvital@gmail.com>
      */
-    
     namespace {
         $changeResourceType = false;
         $invalidStreamSocketClient = false;
+        $withoutCrypto = false;
     }
     
     namespace utils\net\SMTP\Client {
@@ -27,6 +27,11 @@
 
         function stream_socket_enable_crypto($stream, $enable, $type)
         {
+            global $withoutCrypto;
+            if($withoutCrypto === TRUE) {
+                return false;
+            }
+            
             return ($type === STREAM_CRYPTO_METHOD_TLS_CLIENT);
         }
 
@@ -84,6 +89,20 @@
                 $state = PHPUnit_Framework_Assert::readAttribute($connection, "state");
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\ConnectionState);
                 $this->assertTrue($state instanceof \utils\net\SMTP\Client\Connection\State\Established);
+            }
+            
+            /**
+             * @expectedException RuntimeException
+             */
+            public function testConnectionOpeningWithUnacceptedStarttls()
+            {
+                $streamWrapper = parent::getWrapper();
+                $this->expectWrite($this->at(12), "STARTTLS", $streamWrapper);
+                $streamWrapper->expects($this->at(14))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(666, "The Number Of The Beast"));
+                
+                $this->getConnection($streamWrapper);
             }
             
             public function testStreamWriteAndReadAfterOpenConnection()
@@ -223,6 +242,37 @@
             }
             
             /**
+             * @expectedException RuntimeException
+             */
+            public function testAuthCommandWithInvalidUser()
+            {
+                $username = "test.authlogin@test.com";
+                $password = "qwertyuiop123456789";
+                
+                $streamWrapper = $this->getWrapper();
+                $this->expectWrite($this->at(24), "AUTH LOGIN", $streamWrapper);
+
+                $streamWrapper->expects($this->at(26))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(Authentication::ACCEPTED, NULL));
+
+                $this->expectWrite($this->at(28), base64_encode($username), $streamWrapper);
+
+                $streamWrapper->expects($this->at(30))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(Authentication::ACCEPTED, "Accepted"));
+
+                $this->expectWrite($this->at(32), base64_encode($password), $streamWrapper);
+
+                $streamWrapper->expects($this->at(34))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(666, "Unrecognized"));
+
+                $connection = $this->getConnection($streamWrapper);
+                $connection->authenticate(new Login($username, $password));
+            }
+
+            /**
              * @expectedException BadMethodCallException
              */
             public function testWriteAtInvalidState()
@@ -359,6 +409,27 @@
                 global $invalidStreamSocketClient;
                 $invalidStreamSocketClient = TRUE;
                 new TLSConnection(self::HOSTNAME, self::PORT);
+            }
+            
+            /**
+             * @expectedException RuntimeException
+             * @expectedExceptionMessage Cannot encrypt the connection.
+             */
+            public function testConnectionOpeningWithUnencryptedConnection()
+            {
+                global $invalidStreamSocketClient, $withoutCrypto, $changeResourceType;
+                $invalidStreamSocketClient = FALSE;
+                $changeResourceType = FALSE;
+                $withoutCrypto = TRUE;
+                
+                
+                $streamWrapper = parent::getWrapper();
+                $this->expectWrite($this->at(12), "STARTTLS", $streamWrapper);
+                $streamWrapper->expects($this->at(14))
+                              ->method(self::READ)
+                              ->will($this->returnMessage(220, "Ready"));
+                
+                $this->getConnection($streamWrapper);
             }
             
         }
