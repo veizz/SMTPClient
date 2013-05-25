@@ -18,5 +18,10 @@
         "source": "https://github.com/andreyknupp/SMTPClient"
     },
     "homepage": "https://github.com/andreyknupp/SMTPClient",
-    "type": "library"
+    "type": "library",
+    "autoload": {
+        "psr-0": {
+            "utils": ""
+        }
+    }
 }
