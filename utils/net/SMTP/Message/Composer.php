@@ -22,7 +22,7 @@
             foreach ($headerSet AS $header) {
                 $headerString = (string) $header;
                 if (!empty($headerString)) {
-                    $headers[] = $header;
+                    $headers[] = trim($header);
                 }
             }
 
