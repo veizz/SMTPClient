@@ -7,7 +7,7 @@
     ini_set("date.timezone", "America/Sao_Paulo");
 
     $include_path = explode(PATH_SEPARATOR, get_include_path());
-    $include_path[] = stream_resolve_include_path("..");
+    $include_path[] = stream_resolve_include_path(__DIR__ . "/..");
     $include_path[] = stream_resolve_include_path("tests");
     set_include_path(implode(PATH_SEPARATOR, array_filter($include_path)));
 
